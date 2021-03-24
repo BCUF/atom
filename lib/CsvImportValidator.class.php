@@ -82,13 +82,14 @@ class CsvImportValidator
         'CsvColumnCountTest'      => CsvColumnCountTest::class,
         'CsvEmptyRowTest'         => CsvEmptyRowTest::class,
         'CsvSampleColumnsTest'    => CsvSampleColumnsTest::class,
-        'CsvParentIdTest'         => CsvParentIdTest::class,
+        'CsvParentTest'         => CsvParentTest::class,
       ]
     );
 
     $this->setOrmClasses(
       [
         'QubitFlatfileImport'    => QubitFlatfileImport::class,
+        'QubitObject'            => QubitObject::class,
       ]
     );
   }
