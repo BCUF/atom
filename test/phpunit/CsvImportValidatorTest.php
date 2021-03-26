@@ -41,6 +41,13 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
     );
 
+    $this->csvDataDuplicatedLegacyId = array(
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","",""',
+      '"","","","Chemise","","","","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""',
+      '"B10101", "DJ003", "ID4", "Title Four", "","", "", "en"',
+    );
+
     $this->csvDataMissingParentId = array(
       '"B10101 ","ID1 ","Some Photographs","","Extent and medium 1","",""',
       '"","","Chemise","","","","fr"',
@@ -175,6 +182,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_parent_id_matches_in_keymap.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataParentIdMatchesInKeymap),
       'unix_csv_qubit_parent_slug.csv' => $this->csvHeaderWithQubitParentSlug . "\n" . implode("\n", $this->csvDataQubitParentSlug),
       'unix_csv_parent_id_and_qubit_parent_slug.csv' => $this->csvHeaderWithParentIdQubitParentSlug . "\n" . implode("\n", $this->csvDataParentIdAndQubitParentSlug),
+      'unix_csv_with_duplicated_legacy_id.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataDuplicatedLegacyId),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -856,6 +864,68 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Column \'qubitParentSlug\' will override \'parentId\' if both are populated.',
           ],
           CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvLegacyIdTest.class.php
+       *
+       * Tests:
+       * - legacyId col missing
+       * - legacyId not populated
+       * - legacyId populated
+       * - duplicate legacyId
+       **************************************************************************/
+      [
+        "CsvLegacyTest-LegacyIdColumnMissing" => [
+          "csvValidatorClasses" => [ 'CsvLegacyIdTest' => CsvLegacyIdTest::class ],
+          "filename" => '/unix_csv_missing_legacy_id.csv',
+          "testname" => 'CsvLegacyIdTest',
+          CsvBaseTest::TEST_TITLE => CsvLegacyIdTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLegacyIdTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'legacyId\' column not present. Future CSV updates may not match these records.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvLegacyTest-LegacyIdColumnPresent" => [
+          "csvValidatorClasses" => [ 'CsvLegacyIdTest' => CsvLegacyIdTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvLegacyIdTest',
+          CsvBaseTest::TEST_TITLE => CsvLegacyIdTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLegacyIdTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'legacyId\' values are all unique.',
+            'Rows with empty \'legacyId\' column: 2.',
+            'Future CSV updates may not match these records.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            ',,,Chemise,,,,fr',
+            ',DJ003,ID4,Title Four,,,,en',
+          ],
+        ],
+      ],
+
+      [
+        "CsvLegacyTest-DuplicatedLegacyId" => [
+          "csvValidatorClasses" => [ 'CsvLegacyIdTest' => CsvLegacyIdTest::class ],
+          "filename" => '/unix_csv_with_duplicated_legacy_id.csv',
+          "testname" => 'CsvLegacyIdTest',
+          CsvBaseTest::TEST_TITLE => CsvLegacyIdTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLegacyIdTest::RESULT_ERROR,
+          CsvBaseTest::TEST_RESULTS => [
+            'Rows with non-unique \'legacyId\' values: 1.',
+            'Rows with empty \'legacyId\' column: 1.',
+            'Future CSV updates may not match these records.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            ',,,Chemise,,,,fr',
+            'Non-unique \'legacyId\' values: B10101',
           ],
         ],
       ],
