@@ -207,7 +207,7 @@ class CsvParentTest extends CsvBaseTest
       }
       if ($this->qubitParentSlugColumnPresent)
       {
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with qubitParentSlug populated: %s.", $this->rowsWithQubitParentSlug));  
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with qubitParentSlug populated: %s.", $this->rowsWithQubitParentSlug));
       }
 
       // Rows exist with both parentId and qubitParentSlug populated. Warn that qubitParentSlug will override.

@@ -20,6 +20,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
     $this->csvHeaderMissingParentId = 'legacyId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderMissingLegacyId = 'parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderMissingParentIdLegacyId = 'identifier,title,levelOfDescription,extentAndMedium,repository,culture';
+    $this->csvHeaderMissingCulture = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository';
 
     $this->csvHeaderWithQubitParentSlug = 'legacyId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderWithParentIdQubitParentSlug = 'legacyId,parentId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
@@ -67,6 +68,31 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       '"","Chemise","","","","fr"',
       '"", "Voûte, étagère 0074", "", "", "", ""',
       '"ID4", "Title Four", "","", "", "en"',
+    );
+
+    $this->csvDataMissingCulture = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1",""',
+      '"","","","Chemise","","",""',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", ""',
+      '"", "DJ003", "ID4", "Title Four", "","", ""',
+    );
+
+    $this->csvDataValidCultures = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es "',
+      '"","","","Chemise","","","","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de"',
+      '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
+    );
+
+    $this->csvDataCulturesSomeInvalid = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es "',
+      '"","","","Chemise","","","","fr|en"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "gg"',
+      '"E20202", "DJ003", "ID4", "Title Four", "","", "", "en"',
+      '"F20202", "DJ004", "DD8989", "pdf documents", "","", "", ""',
     );
 
     $this->csvDataParentIdColumnEmpty = array(
@@ -183,6 +209,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_qubit_parent_slug.csv' => $this->csvHeaderWithQubitParentSlug . "\n" . implode("\n", $this->csvDataQubitParentSlug),
       'unix_csv_parent_id_and_qubit_parent_slug.csv' => $this->csvHeaderWithParentIdQubitParentSlug . "\n" . implode("\n", $this->csvDataParentIdAndQubitParentSlug),
       'unix_csv_with_duplicated_legacy_id.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataDuplicatedLegacyId),
+      'unix_csv_missing_culture.csv' => $this->csvHeaderMissingCulture . "\n" . implode("\n", $this->csvDataMissingCulture),
+      'unix_csv_valid_cultures.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataValidCultures),
+      'unix_csv_cultures_some_invalid.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataCulturesSomeInvalid),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -926,6 +955,67 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_DETAIL => [
             ',,,Chemise,,,,fr',
             'Non-unique \'legacyId\' values: B10101',
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvCultureTest.class.php
+       *
+       * Tests:
+       * - culture column missing
+       * - culture column present with valid data
+       * - culture column present with mix of valid and invalid data
+       **************************************************************************/
+      [
+        "CsvCultureTest-CultureColMissing" => [
+          "csvValidatorClasses" => [ 'CsvCultureTest' => CsvCultureTest::class ],
+          "filename" => '/unix_csv_missing_culture.csv',
+          "testname" => 'CsvCultureTest',
+          CsvBaseTest::TEST_TITLE => CsvCultureTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvCultureTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'culture\' column not present in file.',
+            'Rows without a valid culture value will be imported using AtoM\'s default source culture.'
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvCultureTest-CulturesValid" => [
+          "csvValidatorClasses" => [ 'CsvCultureTest' => CsvCultureTest::class ],
+          "filename" => '/unix_csv_valid_cultures.csv',
+          "testname" => 'CsvCultureTest',
+          CsvBaseTest::TEST_TITLE => CsvCultureTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvCultureTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'culture\' column values are all valid.'
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvCultureTest-CulturesSomeInvalid" => [
+          "csvValidatorClasses" => [ 'CsvCultureTest' => CsvCultureTest::class ],
+          "filename" => '/unix_csv_cultures_some_invalid.csv',
+          "testname" => 'CsvCultureTest',
+          CsvBaseTest::TEST_TITLE => CsvCultureTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvCultureTest::RESULT_ERROR,
+          CsvBaseTest::TEST_RESULTS => [
+            'Rows with blank culture value: 1.',
+            'Rows with invalid culture values: 1.',
+            'Rows with pipe character in culture values: 1.',
+            '\'culture\' column does not allow for multiple values separated with a pipe \'|\' character.',
+            'Invalid culture values: fr|en, gg.',
+            'Rows with a blank culture value will be imported using AtoM\'s default source culture.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            ',,,Chemise,,,,fr|en',
+            'D20202,DJ002,,Voûte, étagère 0074,,,,gg',
           ],
         ],
       ],
