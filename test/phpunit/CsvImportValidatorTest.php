@@ -21,6 +21,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
     $this->csvHeaderMissingLegacyId = 'parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderMissingParentIdLegacyId = 'identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderMissingCulture = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository';
+    $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
 
     $this->csvHeaderWithQubitParentSlug = 'legacyId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderWithParentIdQubitParentSlug = 'legacyId,parentId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
@@ -84,6 +85,22 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       '"","","","Chemise","","","","fr"',
       '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de"',
       '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
+    );
+
+    $this->csvDataCultureLanguage = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ","es"',
+      '"","","","Chemise","","","","fr","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de","de"',
+      '"", "DJ003", "ID4", "Title Four", "","", "", "en","english"',
+    );
+
+    $this->csvDataCultureLanguageMultErrors = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ","this is spanish"',
+      '"","","","Chemise","","","","fr","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "Germany","de"',
+      '"", "DJ003", "ID4", "Title Four", "","", "", "en","english"',
     );
 
     $this->csvDataCulturesSomeInvalid = array(
@@ -212,6 +229,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_missing_culture.csv' => $this->csvHeaderMissingCulture . "\n" . implode("\n", $this->csvDataMissingCulture),
       'unix_csv_valid_cultures.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataValidCultures),
       'unix_csv_cultures_some_invalid.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataCulturesSomeInvalid),
+      'unix_csv_culture_language_length_error.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguage),
+      'unix_csv_culture_language_length_errors.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguageMultErrors),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -749,7 +768,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 3.',
+            'Rows with parentId populated: 3',
             '\'legacyId\' column not found. Unable to match parentId to CSV rows.',
             "'source' option not specified. Unable to check parentId values against AtoM's database.",
             'Number of rows for which parents could not be found (will import as top level records): 3',
@@ -770,7 +789,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 0.',
+            'Rows with parentId populated: 0',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -785,7 +804,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 3.',
+            'Rows with parentId populated: 3',
             "'source' option not specified. Unable to check parentId values against AtoM's database.",
             'Number of rows for which parents could not be found (will import as top level records): 3',
           ],
@@ -805,7 +824,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 1.',
+            'Rows with parentId populated: 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -821,7 +840,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 1.',
+            'Rows with parentId populated: 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -836,7 +855,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 1.',
+            'Rows with parentId populated: 1',
             "'source' option not specified. Unable to check parentId values against AtoM's database.",
             'Number of rows for which parents could not be found (will import as top level records): 1',
           ],
@@ -855,7 +874,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 1.',
+            'Rows with parentId populated: 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -870,7 +889,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with qubitParentSlug populated: 2.',
+            'Rows with qubitParentSlug populated: 2',
             'Number of rows for which parents could not be found (will import as top level records): 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
@@ -887,9 +906,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvParentTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvParentTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with parentId populated: 1.',
-            'Rows with qubitParentSlug populated: 2.',
-            'Rows with both \'parentId\' and \'qubitParentSlug\' populated: 1.',
+            'Rows with parentId populated: 1',
+            'Rows with qubitParentSlug populated: 2',
+            'Rows with both \'parentId\' and \'qubitParentSlug\' populated: 1',
             'Column \'qubitParentSlug\' will override \'parentId\' if both are populated.',
           ],
           CsvBaseTest::TEST_DETAIL => [
@@ -930,7 +949,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_STATUS => CsvLegacyIdTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
             '\'legacyId\' values are all unique.',
-            'Rows with empty \'legacyId\' column: 2.',
+            'Rows with empty \'legacyId\' column: 2',
             'Future CSV updates may not match these records.',
           ],
           CsvBaseTest::TEST_DETAIL => [
@@ -948,8 +967,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvLegacyIdTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvLegacyIdTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with non-unique \'legacyId\' values: 1.',
-            'Rows with empty \'legacyId\' column: 1.',
+            'Rows with non-unique \'legacyId\' values: 1',
+            'Rows with empty \'legacyId\' column: 1',
             'Future CSV updates may not match these records.',
           ],
           CsvBaseTest::TEST_DETAIL => [
@@ -1006,16 +1025,95 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvCultureTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvCultureTest::RESULT_ERROR,
           CsvBaseTest::TEST_RESULTS => [
-            'Rows with blank culture value: 1.',
-            'Rows with invalid culture values: 1.',
-            'Rows with pipe character in culture values: 1.',
+            'Rows with blank culture value: 1',
+            'Rows with invalid culture values: 1',
+            'Rows with pipe character in culture values: 1',
             '\'culture\' column does not allow for multiple values separated with a pipe \'|\' character.',
-            'Invalid culture values: fr|en, gg.',
+            'Invalid culture values: fr|en, gg',
             'Rows with a blank culture value will be imported using AtoM\'s default source culture.',
           ],
           CsvBaseTest::TEST_DETAIL => [
             ',,,Chemise,,,,fr|en',
             'D20202,DJ002,,Voûte, étagère 0074,,,,gg',
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvFieldLengthTest.class.php
+       *
+       * Tests:
+       * - no checked columns present
+       * - one checked col present, not triggering error
+       * - multiple checked cols present, one triggers error
+       * - multiple checked cols present, multiple trigger error
+       **************************************************************************/
+
+      [
+        "CsvFieldLengthTest-LengthCheckNonePresent" => [
+          "csvValidatorClasses" => [ 'CsvFieldLengthTest' => CsvFieldLengthTest::class ],
+          "filename" => '/unix_csv_missing_culture.csv',
+          "testname" => 'CsvFieldLengthTest',
+          CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'No columns to check.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvFieldLengthTest-LengthCheckValidCulturesPresent" => [
+          "csvValidatorClasses" => [ 'CsvFieldLengthTest' => CsvFieldLengthTest::class ],
+          "filename" => '/unix_csv_cultures_some_invalid.csv',
+          "testname" => 'CsvFieldLengthTest',
+          CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'culture\' values that exceed 6 characters: 0'
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvFieldLengthTest-LengthCheckLanguageCultureError" => [
+          "csvValidatorClasses" => [ 'CsvFieldLengthTest' => CsvFieldLengthTest::class ],
+          "filename" => '/unix_csv_culture_language_length_error.csv',
+          "testname" => 'CsvFieldLengthTest',
+          CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'culture\' values that exceed 6 characters: 0',
+            '\'language\' column may have invalid values.',
+            '\'language\' values that exceed 6 characters: 1',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            'language column value: english',
+          ],
+        ],
+      ],
+
+      [
+        "CsvFieldLengthTest-LengthCheckLanguageCultureMultErrors" => [
+          "csvValidatorClasses" => [ 'CsvFieldLengthTest' => CsvFieldLengthTest::class ],
+          "filename" => '/unix_csv_culture_language_length_errors.csv',
+          "testname" => 'CsvFieldLengthTest',
+          CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'culture\' column may have invalid values.',
+            '\'culture\' values that exceed 6 characters: 1',
+            '\'language\' column may have invalid values.',
+            '\'language\' values that exceed 6 characters: 2',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            'language column value: this is spanish',
+            'culture column value: Germany',
+            'language column value: english',
           ],
         ],
       ],

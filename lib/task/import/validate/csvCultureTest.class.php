@@ -73,7 +73,7 @@ class CsvCultureTest extends CsvBaseTest
     // Set if culture column is present.
     if (!isset($this->cultureColumnPresent))
     {
-      $this->cultureColumnPresent = (array_key_exists('culture', $row) ? true : false);
+      $this->cultureColumnPresent = array_key_exists('culture', $row);
     }
 
     // If present check contents.
@@ -130,27 +130,27 @@ class CsvCultureTest extends CsvBaseTest
       if (0 < $this->rowsWithBlankCulture)
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with blank culture value: %s.", $this->rowsWithBlankCulture));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with blank culture value: %s", $this->rowsWithBlankCulture));
       }
 
       // Rows exist with invalid culture.
       if (0 < $this->rowsWithInvalidCulture)
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with invalid culture values: %s.", $this->rowsWithInvalidCulture));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with invalid culture values: %s", $this->rowsWithInvalidCulture));
       }
 
       // Rows exist with culture containing pipe '|'
       if (0 < $this->rowsWithPipeFoundInCulture)
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with pipe character in culture values: %s.", $this->rowsWithPipeFoundInCulture));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with pipe character in culture values: %s", $this->rowsWithPipeFoundInCulture));
         $this->addTestResult(self::TEST_RESULTS, sprintf("'culture' column does not allow for multiple values separated with a pipe '|' character."));
       }
 
       if (0 < $this->rowsWithInvalidCulture || 0 < $this->rowsWithPipeFoundInCulture)
       {
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Invalid culture values: %s.", implode(", ", $this->invalidCultures)));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Invalid culture values: %s", implode(", ", $this->invalidCultures)));
       }
 
       if (0 < $this->rowsWithBlankCulture || 0 < $this->rowsWithInvalidCulture)

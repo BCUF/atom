@@ -85,6 +85,7 @@ class CsvImportValidator
         'CsvParentTest'           => CsvParentTest::class,
         'CsvLegacyIdTest'         => CsvLegacyIdTest::class,
         'CsvCultureTest'          => CsvCultureTest::class,
+        'CsvFieldLengthTest'      => CsvFieldLengthTest::class,
       ]
     );
 

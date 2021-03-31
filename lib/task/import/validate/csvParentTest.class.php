@@ -75,19 +75,19 @@ class CsvParentTest extends CsvBaseTest
     // Is qubitParentSlug column present?
     if (!isset($this->qubitParentSlugColumnPresent))
     {
-      $this->qubitParentSlugColumnPresent = (array_key_exists('qubitParentSlug', $row) ? true : false);
+      $this->qubitParentSlugColumnPresent = array_key_exists('qubitParentSlug', $row);
     }
 
     // Is parentId column present?
     if (!isset($this->parentIdColumnPresent))
     {
-      $this->parentIdColumnPresent = (array_key_exists('parentId', $row) ? true : false);
+      $this->parentIdColumnPresent = array_key_exists('parentId', $row);
     }
 
     // Is legacyId column present?
     if (!isset($this->legacyIdColumnPresent))
     {
-      $this->legacyIdColumnPresent = (array_key_exists('legacyId', $row) ? true : false);
+      $this->legacyIdColumnPresent = array_key_exists('legacyId', $row);
     }
 
     // When both are present, qubitParentSlug will override parentId.
@@ -203,18 +203,18 @@ class CsvParentTest extends CsvBaseTest
 
       if ($this->parentIdColumnPresent)
       {
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with parentId populated: %s.", $this->rowsWithParentId));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with parentId populated: %s", $this->rowsWithParentId));
       }
       if ($this->qubitParentSlugColumnPresent)
       {
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with qubitParentSlug populated: %s.", $this->rowsWithQubitParentSlug));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with qubitParentSlug populated: %s", $this->rowsWithQubitParentSlug));
       }
 
       // Rows exist with both parentId and qubitParentSlug populated. Warn that qubitParentSlug will override.
       if (0 < $this->rowsWithParentIdQubitParentSlug)
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with both 'parentId' and 'qubitParentSlug' populated: %s.", $this->rowsWithParentIdQubitParentSlug));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with both 'parentId' and 'qubitParentSlug' populated: %s", $this->rowsWithParentIdQubitParentSlug));
         $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'qubitParentSlug' will override 'parentId' if both are populated."));
       }
 

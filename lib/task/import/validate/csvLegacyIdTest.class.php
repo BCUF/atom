@@ -63,7 +63,7 @@ class CsvLegacyIdTest extends CsvBaseTest
     // Is legacyId column present?
     if (!isset($this->legacyIdColumnPresent))
     {
-      $this->legacyIdColumnPresent = (array_key_exists('legacyId', $row) ? true : false);
+      $this->legacyIdColumnPresent = array_key_exists('legacyId', $row);
     }
 
     if ($this->legacyIdColumnPresent)
@@ -102,7 +102,7 @@ class CsvLegacyIdTest extends CsvBaseTest
       if (0 < count($this->nonUniqueLegacyIdValues))
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with non-unique 'legacyId' values: %s.", count($this->nonUniqueLegacyIdValues)));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with non-unique 'legacyId' values: %s", count($this->nonUniqueLegacyIdValues)));
         $this->addTestResult(self::TEST_DETAIL, sprintf("Non-unique 'legacyId' values: %s", implode(', ', $this->nonUniqueLegacyIdValues)));
       }
       else
@@ -115,7 +115,7 @@ class CsvLegacyIdTest extends CsvBaseTest
       if (0 < $this->rowsWithoutLegacyId)
       {
         $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with empty 'legacyId' column: %s.", $this->rowsWithoutLegacyId));
+        $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with empty 'legacyId' column: %s", $this->rowsWithoutLegacyId));
       }
 
       if (0 < $this->rowsWithoutLegacyId || 0 < count($this->nonUniqueLegacyIdValues))
