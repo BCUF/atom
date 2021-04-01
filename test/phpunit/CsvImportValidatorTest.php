@@ -23,6 +23,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
     $this->csvHeaderMissingCulture = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository';
     $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
 
+    $this->csvHeaderDuplicatedRepository = 'legacyId,parentId,identifier,title,repository,extentAndMedium,repository,culture';
+    $this->csvHeaderDuplicatedRepositoryCulture = 'legacyId,parentId,culture,title,repository,culture,repository,culture';
+
     $this->csvHeaderWithQubitParentSlug = 'legacyId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
     $this->csvHeaderWithParentIdQubitParentSlug = 'legacyId,parentId,qubitParentSlug,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
 
@@ -231,6 +234,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_cultures_some_invalid.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataCulturesSomeInvalid),
       'unix_csv_culture_language_length_error.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguage),
       'unix_csv_culture_language_length_errors.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguageMultErrors),
+      'unix_csv_one_duplicated_header.csv' => $this->csvHeaderDuplicatedRepository . "\n" . implode("\n", $this->csvData),
+      'unix_csv_duplicated_headers.csv' => $this->csvHeaderDuplicatedRepositoryCulture . "\n" . implode("\n", $this->csvData),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -1048,7 +1053,6 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
        * - multiple checked cols present, one triggers error
        * - multiple checked cols present, multiple trigger error
        **************************************************************************/
-
       [
         "CsvFieldLengthTest-LengthCheckNonePresent" => [
           "csvValidatorClasses" => [ 'CsvFieldLengthTest' => CsvFieldLengthTest::class ],
@@ -1114,6 +1118,60 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'language column value: this is spanish',
             'culture column value: Germany',
             'language column value: english',
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvDuplicateColumnNameTest.class.php
+       *
+       * Tests:
+       * - no duplicated column headers
+       * - one duplicated column header
+       * - mulitple different duplicated column headers
+       **************************************************************************/
+      [
+        "CsvDuplicateColumnNameTest-NoDuplicatedColumnHeader" => [
+          "csvValidatorClasses" => [ 'CsvDuplicateColumnNameTest' => CsvDuplicateColumnNameTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvDuplicateColumnNameTest',
+          CsvBaseTest::TEST_TITLE => CsvDuplicateColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvDuplicateColumnNameTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'No duplicate column names found.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvDuplicateColumnNameTest-OneDuplicatedColumnHeader" => [
+          "csvValidatorClasses" => [ 'CsvDuplicateColumnNameTest' => CsvDuplicateColumnNameTest::class ],
+          "filename" => '/unix_csv_one_duplicated_header.csv',
+          "testname" => 'CsvDuplicateColumnNameTest',
+          CsvBaseTest::TEST_TITLE => CsvDuplicateColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvDuplicateColumnNameTest::RESULT_ERROR,
+          CsvBaseTest::TEST_RESULTS => [
+            'Columns with name \'repository\': 2',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvDuplicateColumnNameTest-DuplicatedColumnHeaders" => [
+          "csvValidatorClasses" => [ 'CsvDuplicateColumnNameTest' => CsvDuplicateColumnNameTest::class ],
+          "filename" => '/unix_csv_duplicated_headers.csv',
+          "testname" => 'CsvDuplicateColumnNameTest',
+          CsvBaseTest::TEST_TITLE => CsvDuplicateColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvDuplicateColumnNameTest::RESULT_ERROR,
+          CsvBaseTest::TEST_RESULTS => [
+            'Columns with name \'culture\': 3',
+            'Columns with name \'repository\': 2',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
           ],
         ],
       ],

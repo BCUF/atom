@@ -102,7 +102,7 @@ abstract class CsvBaseTest
     }
 
     // return array_combined row, trim each element.
-    return array_map('trim', array_combine($header, $row));
+    return array_combine(array_map('trim', $header), array_map('trim', $row));
   }
 
   public function setOrmClasses(array $classes)
