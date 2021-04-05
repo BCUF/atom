@@ -44,9 +44,9 @@ class CsvParentTest extends CsvBaseTest
 
   const TITLE = 'Parent column check';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

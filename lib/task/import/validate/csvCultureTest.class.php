@@ -34,11 +34,11 @@ class CsvCultureTest extends CsvBaseTest
   protected $rowsWithInvalidCulture = 0;
   protected $invalidCultures = [];
 
-  const TITLE = 'Culture Column Test';
+  const TITLE = 'Culture Column Check';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

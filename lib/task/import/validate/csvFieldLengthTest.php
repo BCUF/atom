@@ -46,11 +46,11 @@ class CsvFieldLengthTest extends CsvBaseTest
   protected $columnsFound = [];
   protected $columnsChecked = false;
 
-  const TITLE = 'Field Length Test';
+  const TITLE = 'Field Length Check';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

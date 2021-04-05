@@ -48,9 +48,12 @@ abstract class CsvBaseTest
   protected $options = [];
   protected $ormClasses = [];
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-
+    if (isset($options))
+    {
+      $this->setOptions($options);
+    }
   }
   
   public function testRow(array $header, array $row)

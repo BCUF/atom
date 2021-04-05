@@ -38,9 +38,9 @@ class CsvLegacyIdTest extends CsvBaseTest
 
   const TITLE = 'LegacyId column check';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

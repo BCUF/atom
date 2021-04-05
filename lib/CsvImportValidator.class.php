@@ -78,15 +78,16 @@ class CsvImportValidator
 
     $this->setCsvTests(
       [
-        'CsvFileEncodingTest'     => CsvFileEncodingTest::class,
-        'CsvColumnCountTest'      => CsvColumnCountTest::class,
-        'CsvEmptyRowTest'         => CsvEmptyRowTest::class,
-        'CsvSampleColumnsTest'    => CsvSampleColumnsTest::class,
-        'CsvParentTest'           => CsvParentTest::class,
-        'CsvLegacyIdTest'         => CsvLegacyIdTest::class,
-        'CsvCultureTest'          => CsvCultureTest::class,
-        'CsvFieldLengthTest'      => CsvFieldLengthTest::class,
+        'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
+        'CsvColumnCountTest'          => CsvColumnCountTest::class,
+        'CsvEmptyRowTest'             => CsvEmptyRowTest::class,
+        'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
+        'CsvParentTest'               => CsvParentTest::class,
+        'CsvLegacyIdTest'             => CsvLegacyIdTest::class,
+        'CsvCultureTest'              => CsvCultureTest::class,
+        'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
         'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
+        'CsvColumnNameTest'           => CsvColumnNameTest::class,
       ]
     );
 
@@ -180,7 +181,7 @@ class CsvImportValidator
       // Set specifics for this csv file
       foreach ($this->csvTests as $test)
       {
-        $test->setOptions($this->getOptions());
+        //$test->setOptions($this->getOptions());
         $test->setOrmClasses($this->ormClasses);
         $test->setFilename($filename);
         $test->setColumnCount($this->getLongestRow());
@@ -259,7 +260,7 @@ class CsvImportValidator
 
     foreach($classes as $key => $class)
     {
-      $this->csvTests[$key] = new $class();
+      $this->csvTests[$key] = new $class($this->getOptions());
     }
   }
 

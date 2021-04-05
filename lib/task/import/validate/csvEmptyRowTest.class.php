@@ -34,9 +34,9 @@ class CsvEmptyRowTest extends CsvBaseTest
 
   const TITLE = 'CSV Empty Row Check';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

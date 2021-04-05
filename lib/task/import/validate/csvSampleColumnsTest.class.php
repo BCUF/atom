@@ -32,9 +32,9 @@ class CsvSampleColumnsTest extends CsvBaseTest
 
   const TITLE = 'Sample Values';
 
-  public function __construct()
+  public function __construct(array $options = null)
   {
-    parent::__construct();
+    parent::__construct($options);
 
     $this->setTitle(self::TITLE);
     $this->reset();

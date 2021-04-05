@@ -14,6 +14,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
 
     $this->csvHeader = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
 
+    $this->csvHeaderUnknownColumnName = 'legacyId,parentId,identifier,title,levilOfDescrooption,extentAndMedium,repository,culture';
+    $this->csvHeaderBadCaseColumnName = 'legacyId,parentId,identifier,Title,levelOfDescription,extentAndMedium,repository,culture';
+
     $this->csvHeaderShort = 'legacyId,parentId,identifier,title,levelOfDescription,repository,culture';
     $this->csvHeaderLong = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,extraHeading';
 
@@ -236,6 +239,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_culture_language_length_errors.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguageMultErrors),
       'unix_csv_one_duplicated_header.csv' => $this->csvHeaderDuplicatedRepository . "\n" . implode("\n", $this->csvData),
       'unix_csv_duplicated_headers.csv' => $this->csvHeaderDuplicatedRepositoryCulture . "\n" . implode("\n", $this->csvData),
+      'unix_csv_unknown_column_name.csv' => $this->csvHeaderUnknownColumnName . "\n" . implode("\n", $this->csvData),
+      'unix_csv_bad_case_column_name.csv' => $this->csvHeaderBadCaseColumnName . "\n" . implode("\n", $this->csvData),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -1172,6 +1177,97 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Columns with name \'repository\': 2',
           ],
           CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvColumnNameTest.class.php
+       *
+       * Tests:
+       * - class-name not set
+       * - all columns validate against config file
+       * - some columns fail to validate without matching by lower case
+       * - some columns fail to validate but match by lower case
+       **************************************************************************/
+
+      [
+        "CsvColumnNameTest-ClassNameNotSet" => [
+          "csvValidatorClasses" => [ 'CsvColumnNameTest' => CsvColumnNameTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvColumnNameTest',
+          "validatorOptions" => [
+              'source' => 'testsourcefile.csv',
+            ],
+          CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'Number of unknown column names found in CSV: 0',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvColumnNameTest-AllColumnNamesMatch" => [
+          "csvValidatorClasses" => [ 'CsvColumnNameTest' => CsvColumnNameTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvColumnNameTest',
+          "validatorOptions" => [
+              'source' => 'testsourcefile.csv',
+              'className' => 'QubitInformationObject',
+            ],
+          CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'Number of unknown column names found in CSV: 0',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvColumnNameTest-SomeUnmatched" => [
+          "csvValidatorClasses" => [ 'CsvColumnNameTest' => CsvColumnNameTest::class ],
+          "filename" => '/unix_csv_unknown_column_name.csv',
+          "testname" => 'CsvColumnNameTest',
+          "validatorOptions" => [
+              'source' => 'testsourcefile.csv',
+              'className' => 'QubitInformationObject',
+            ],
+          CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            'Number of unknown column names found in CSV: 1',
+            'Unknown columns will be ignored by AtoM when the CSV is imported.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            'Unknown columns: levilOfDescrooption',
+          ],
+        ],
+      ],
+
+      [
+        "CsvColumnNameTest-BadCaseColumnName" => [
+          "csvValidatorClasses" => [ 'CsvColumnNameTest' => CsvColumnNameTest::class ],
+          "filename" => '/unix_csv_bad_case_column_name.csv',
+          "testname" => 'CsvColumnNameTest',
+          "validatorOptions" => [
+              'source' => 'testsourcefile.csv',
+              'className' => 'QubitInformationObject',
+            ],
+          CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            'Number of unknown column names found in CSV: 1',
+            'Unknown columns will be ignored by AtoM when the CSV is imported.',
+            'Number of unknown columns that may be case related: 1',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            'Unknown columns: Title',
+            'Possible match for Title: title'
           ],
         ],
       ],
