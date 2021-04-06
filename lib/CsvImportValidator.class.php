@@ -79,15 +79,16 @@ class CsvImportValidator
     $this->setCsvTests(
       [
         'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
+        'CsvColumnNameTest'           => CsvColumnNameTest::class,
         'CsvColumnCountTest'          => CsvColumnCountTest::class,
+        'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
         'CsvEmptyRowTest'             => CsvEmptyRowTest::class,
-        'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
         'CsvParentTest'               => CsvParentTest::class,
         'CsvLegacyIdTest'             => CsvLegacyIdTest::class,
         'CsvCultureTest'              => CsvCultureTest::class,
+        'CsvLanguageTest'             => CsvLanguageTest::class,
         'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
-        'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
-        'CsvColumnNameTest'           => CsvColumnNameTest::class,
+        'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
       ]
     );
 

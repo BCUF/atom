@@ -14,6 +14,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
 
     $this->csvHeader = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
 
+    $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
+
     $this->csvHeaderUnknownColumnName = 'legacyId,parentId,identifier,title,levilOfDescrooption,extentAndMedium,repository,culture';
     $this->csvHeaderBadCaseColumnName = 'legacyId,parentId,identifier,Title,levelOfDescription,extentAndMedium,repository,culture';
 
@@ -91,6 +93,20 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       '"","","","Chemise","","","","fr"',
       '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de"',
       '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
+    );
+
+    $this->csvDataValidLanguages = array(
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ", "es"',
+      '"","","","Chemise","","","","fr","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de","en "',
+      '"", "DJ003", "ID4", "Title Four", "","", "", "en"," en"',
+    );
+
+    $this->csvDataLanguagesSomeInvalid = array(
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ", "Spanish"',
+      '"","","","Chemise","","","","fr","fr|en"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de","en_GB"',
+      '"", "DJ003", "ID4", "Title Four", "","", "", "en"," en_gb"',
     );
 
     $this->csvDataCultureLanguage = array(
@@ -235,6 +251,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_missing_culture.csv' => $this->csvHeaderMissingCulture . "\n" . implode("\n", $this->csvDataMissingCulture),
       'unix_csv_valid_cultures.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataValidCultures),
       'unix_csv_cultures_some_invalid.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvDataCulturesSomeInvalid),
+      'unix_csv_valid_languages.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataValidLanguages),
+      'unix_csv_languages_some_invalid.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataLanguagesSomeInvalid),
       'unix_csv_culture_language_length_error.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguage),
       'unix_csv_culture_language_length_errors.csv' => $this->csvHeaderWithLanguage . "\n" . implode("\n", $this->csvDataCultureLanguageMultErrors),
       'unix_csv_one_duplicated_header.csv' => $this->csvHeaderDuplicatedRepository . "\n" . implode("\n", $this->csvData),
@@ -1190,7 +1208,6 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
        * - some columns fail to validate without matching by lower case
        * - some columns fail to validate but match by lower case
        **************************************************************************/
-
       [
         "CsvColumnNameTest-ClassNameNotSet" => [
           "csvValidatorClasses" => [ 'CsvColumnNameTest' => CsvColumnNameTest::class ],
@@ -1268,6 +1285,65 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_DETAIL => [
             'Unknown columns: Title',
             'Possible match for Title: title'
+          ],
+        ],
+      ],
+
+      /**************************************************************************
+       * Test CsvLanguageTest.class.php
+       *
+       * Tests:
+       * - language column missing
+       * - language column present with valid data
+       * - language column present with mix of valid and invalid data
+       **************************************************************************/
+      [
+        "CsvLanguageTest-LanguageColMissing" => [
+          "csvValidatorClasses" => [ 'CsvLanguageTest' => CsvLanguageTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvLanguageTest',
+          CsvBaseTest::TEST_TITLE => CsvLanguageTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLanguageTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'language\' column not present in file.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvLanguageTest-LanguageValid" => [
+          "csvValidatorClasses" => [ 'CsvLanguageTest' => CsvLanguageTest::class ],
+          "filename" => '/unix_csv_valid_languages.csv',
+          "testname" => 'CsvLanguageTest',
+          CsvBaseTest::TEST_TITLE => CsvLanguageTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLanguageTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            '\'language\' column values are all valid.'
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvLanguageTest-LanguagesSomeInvalid" => [
+          "csvValidatorClasses" => [ 'CsvLanguageTest' => CsvLanguageTest::class ],
+          "filename" => '/unix_csv_languages_some_invalid.csv',
+          "testname" => 'CsvLanguageTest',
+          CsvBaseTest::TEST_TITLE => CsvLanguageTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvLanguageTest::RESULT_ERROR,
+          CsvBaseTest::TEST_RESULTS => [
+            'Rows with invalid language values: 2',
+            'Rows with pipe character in language values: 1',
+            '\'language\' column does not allow for multiple values separated with a pipe \'|\' character.',
+            'Invalid language values: Spanish, fr|en, en_gb',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,es,Spanish',
+            ',,,Chemise,,,,fr,fr|en',
+            ',DJ003,ID4,Title Four,,,,en,en_gb',
           ],
         ],
       ],
