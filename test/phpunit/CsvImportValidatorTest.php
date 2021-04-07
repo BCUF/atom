@@ -561,6 +561,14 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
        * Test that all rows including header have the same number of
        * columns/elements.
        * 
+       * - test columns all equal length
+       * - test incorrect separator set
+       * - test header too short
+       * - test header too long
+       * - test single row too short
+       * - test single row too long
+       * - test rows too short
+       * - test rows too long
        **************************************************************************/
       [
         "CsvColumnCountTest-testColumnsEqualLength" => [
@@ -577,6 +585,22 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       ],
 
       [
+        "CsvColumnCountTest-incorrectSeparator " => [
+          "csvValidatorClasses" => [ 'CsvColumnCountTest' => CsvColumnCountTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvColumnCountTest',
+          "validatorOptions" => [ 'separator' => 'j' ],
+          CsvBaseTest::TEST_TITLE => CsvColumnCountTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvColumnCountTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            'Number of columns in CSV: 1',
+            'CSV appears to have only one column - check CSV separator option matches file.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [],
+        ],
+      ],
+
+      [
         "CsvColumnCountTest-testHeaderTooShort" => [
           "csvValidatorClasses" => [ 'CsvColumnCountTest' => CsvColumnCountTest::class ],
           "filename" => '/unix_csv_with_short_header.csv',
@@ -586,6 +610,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_RESULTS => [
             'Number of rows with 7 columns: 1',
             'Number of rows with 8 columns: 4',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -601,6 +626,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_RESULTS => [
             'Number of rows with 9 columns: 1',
             'Number of rows with 8 columns: 4',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -616,6 +642,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_RESULTS => [
             'Number of rows with 8 columns: 4',
             'Number of rows with 7 columns: 1',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -631,6 +658,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_RESULTS => [
             'Number of rows with 8 columns: 4',
             'Number of rows with 9 columns: 1',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -647,6 +675,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Number of rows with 8 columns: 3',
             'Number of rows with 7 columns: 1',
             'Number of rows with 6 columns: 1',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -663,6 +692,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Number of rows with 8 columns: 3',
             'Number of rows with 11 columns: 1',
             'Number of rows with 9 columns: 1',
+            'CSV rows with different lengths detected - check CSV enclosure option matches file.'
           ],
           CsvBaseTest::TEST_DETAIL => [],
         ],
@@ -1099,6 +1129,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: culture',
             '\'culture\' values that exceed 6 characters: 0'
           ],
           CsvBaseTest::TEST_DETAIL => [
@@ -1114,6 +1145,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: culture,language',
             '\'culture\' values that exceed 6 characters: 0',
             '\'language\' column may have invalid values.',
             '\'language\' values that exceed 6 characters: 1',
@@ -1132,6 +1164,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvFieldLengthTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvFieldLengthTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: culture,language',
             '\'culture\' column may have invalid values.',
             '\'culture\' values that exceed 6 characters: 1',
             '\'language\' column may have invalid values.',
@@ -1261,7 +1294,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Unrecognized columns will be ignored by AtoM when the CSV is imported.',
           ],
           CsvBaseTest::TEST_DETAIL => [
-            'Unrecognized columns: levilOfDescrooption',
+            'Unrecognized column: levilOfDescrooption',
           ],
         ],
       ],
@@ -1284,7 +1317,8 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'Number of unrecognized columns that may be case related: 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
-            'Unrecognized columns:  identifier,Title',
+            'Unrecognized column:  identifier',
+            'Unrecognized column: Title',
             'Column names with leading or trailing whitespace: identifier',
             'Possible match for Title: title',
           ],

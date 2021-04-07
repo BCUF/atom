@@ -68,8 +68,14 @@ class CsvColumnCountTest extends CsvBaseTest
     if (1 == count($this->rowCountSummary))
     {
       $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-
       $this->addTestResult(self::TEST_RESULTS, sprintf("Number of columns in CSV: %s", $this->headerCount));
+
+      // Set a warning if there's less than 2 columns. This is probably an issue with field separators.
+      if (1 >= $this->headerCount)
+      {
+        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
+        $this->addTestResult(self::TEST_RESULTS, "CSV appears to have only one column - check CSV separator option matches file.");
+      }
     }
     else
     {
@@ -79,6 +85,7 @@ class CsvColumnCountTest extends CsvBaseTest
       {
         $this->addTestResult(self::TEST_RESULTS, sprintf("Number of rows with %s columns: %s", $columnCount, $numOccurrences));
       }
+      $this->addTestResult(self::TEST_RESULTS, "CSV rows with different lengths detected - check CSV enclosure option matches file.");
     }
     
     return parent::getTestResult();

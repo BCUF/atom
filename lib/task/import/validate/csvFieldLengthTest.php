@@ -99,10 +99,15 @@ class CsvFieldLengthTest extends CsvBaseTest
 
   public function getTestResult()
   {
+    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+
     if (empty($this->columnsFound))
     {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-      $this->addTestResult(self::TEST_RESULTS, sprintf("No columns to check."));
+      $this->addTestResult(self::TEST_RESULTS, "No columns to check.");
+    }
+    else
+    {
+      $this->addTestResult(self::TEST_RESULTS, sprintf("Checking columns: %s", implode(",", array_keys($this->columnsFound))));
     }
 
     foreach ($this->columnsFound as $columnName => $errorCount)

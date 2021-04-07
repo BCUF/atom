@@ -36,7 +36,7 @@ class CsvLegacyIdTest extends CsvBaseTest
   protected $rowsWithoutLegacyId = 0;
   protected $nonUniqueLegacyIdValues = [];
 
-  const TITLE = 'LegacyId column check';
+  const TITLE = 'LegacyId check';
 
   public function __construct(array $options = null)
   {

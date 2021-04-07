@@ -35,7 +35,7 @@ class CsvLanguageTest extends CsvBaseTest
   protected $rowsWithInvalidLanguage = 0;
   protected $invalidLanguages = [];
 
-  const TITLE = 'Language Column Check';
+  const TITLE = 'Language Check';
 
   public function __construct(array $options = null)
   {

@@ -42,7 +42,7 @@ class CsvParentTest extends CsvBaseTest
   protected $rowsWithParentIdQubitParentSlug = 0;
   protected $rowsWithoutParentIdQubitParentSlug = 0;
 
-  const TITLE = 'Parent column check';
+  const TITLE = 'Parent check';
 
   public function __construct(array $options = null)
   {

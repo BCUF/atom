@@ -134,7 +134,10 @@ class CsvColumnNameTest extends CsvBaseTest
     {
       $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
       $this->addTestResult(self::TEST_RESULTS, "Unrecognized columns will be ignored by AtoM when the CSV is imported.");
-      $this->addTestResult(self::TEST_DETAIL, sprintf("Unrecognized columns: %s", implode(',', $this->unknownColumnNames)));
+      foreach ($this->unknownColumnNames as $unknownColumnName)
+      {
+        $this->addTestResult(self::TEST_DETAIL, sprintf("Unrecognized column: %s", $unknownColumnName));
+      }
     }
 
     if (0 < count($this->trimIssuesColumnNames))
