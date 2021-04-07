@@ -57,6 +57,16 @@ class csvCheckImportTask extends arBaseTask
         'Qubit object type contained in CSV.',
         'QubitInformationObject'
       ),
+      new sfCommandOption('separator', null,
+        sfCommandOption::PARAMETER_REQUIRED,
+        'Optional separator parameter sets CSV field separator (1 character).',
+        ','
+      ),
+      new sfCommandOption('enclosure', null,
+        sfCommandOption::PARAMETER_REQUIRED,
+        'Optional enclosure parameter sets CSV field enclosure character (1 character).',
+        '"'
+      ),
     ));
 
     $this->namespace = 'csv';
@@ -123,9 +133,12 @@ EOF;
     
     //$validatorOptions = [];
     $keymap = [
-      'verbose'           => 'verbose',
-      'source'            => 'source',
-      'class-name'        => 'className',
+      'verbose'     => 'verbose',
+      'source'      => 'source',
+      'class-name'  => 'className',
+      'separator'   => 'separator',
+      'enclosure'   => 'enclosure',
+      'escape'      => 'escape',
     ];
 
     foreach ($keymap as $oldkey => $newkey)
@@ -148,6 +161,21 @@ EOF;
     // TODO: Add validation of class-name
   }
 
+  protected function formatStatus(int $status)
+  {
+    switch ($status)
+    {
+      case csvBaseTest::RESULT_INFO:
+        return "info";
+
+        case csvBaseTest::RESULT_WARN:
+        return "Warning";
+
+      case csvBaseTest::RESULT_ERROR:
+        return "ERROR";
+    }
+  }
+
   protected function printResults(array $results)
   {
     foreach ($results as $filename => $fileGroup)
@@ -158,7 +186,7 @@ EOF;
 
       foreach ($fileGroup as $testResult)
       {
-        printf("\n%s\n", $testResult['title']);
+        printf("\n%s - %s\n", $testResult['title'], $this->formatStatus($testResult['status']));
         printf("%s\n", str_repeat("-", strlen($testResult['title'])) );
 
         foreach($testResult['results'] as $line)

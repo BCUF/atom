@@ -54,9 +54,11 @@ class CsvImportValidator
 
   // Default options
   protected $validatorOptions = [
-    'className'  => 'QubitInformationObject',
-    'verbose'    => false,
-    'source'     => '',
+    'className' => 'QubitInformationObject',
+    'verbose'   => false,
+    'source'    => '',
+    'separator' => ',',
+    'enclosure' => '"',
   ];
 
   protected $defaultCsvClassNameList = [
@@ -125,7 +127,7 @@ class CsvImportValidator
   public function loadCsvData($fh)
   {
     $this->handleByteOrderMark($fh);
-    $this->header = fgetcsv($fh, 60000);
+    $this->header = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure'));
 
     if ($this->header === false)
     {
@@ -133,7 +135,7 @@ class CsvImportValidator
     }
 
     $this->rows = [];
-    while ($item = fgetcsv($fh, 60000))
+    while ($item = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure')))
     {
       $this->rows[] = $item;
     }
@@ -182,7 +184,6 @@ class CsvImportValidator
       // Set specifics for this csv file
       foreach ($this->csvTests as $test)
       {
-        //$test->setOptions($this->getOptions());
         $test->setOrmClasses($this->ormClasses);
         $test->setFilename($filename);
         $test->setColumnCount($this->getLongestRow());
@@ -302,6 +303,16 @@ class CsvImportValidator
 
         break;
 
+      case 'separator':
+        $this->setSeparator($value);
+
+        break;
+
+      case 'enclosure':
+        $this->setEnclosure($value);
+
+        break;
+
       default:
         throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
     }
@@ -327,6 +338,26 @@ class CsvImportValidator
   public function setSource(string $value)
   {
     $this->validatorOptions['source'] = $value;
+  }
+
+  public function setSeparator(string $value)
+  {
+    if (1 != strlen($value))
+    {
+      throw new UnexpectedValueException(sprintf('Invalid separator "%s".', $value));
+    }
+
+    $this->validatorOptions['separator'] = $value;
+  }
+
+  public function setEnclosure(string $value)
+  {
+    if (1 != strlen($value))
+    {
+      throw new UnexpectedValueException(sprintf('Invalid enclosure "%s".', $value));
+    }
+
+    $this->validatorOptions['enclosure'] = $value;
   }
 
   public function getOption(String $name)
