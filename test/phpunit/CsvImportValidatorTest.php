@@ -17,7 +17,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
     $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
 
     $this->csvHeaderUnknownColumnName = 'legacyId,parentId,identifier,title,levilOfDescrooption,extentAndMedium,repository,culture';
-    $this->csvHeaderBadCaseColumnName = 'legacyId,parentId,identifier,Title,levelOfDescription,extentAndMedium,repository,culture';
+    $this->csvHeaderBadCaseColumnName = 'legacyId,parentId, identifier,Title,levelOfDescription,extentAndMedium,repository,culture';
 
     $this->csvHeaderShort = 'legacyId,parentId,identifier,title,levelOfDescription,repository,culture';
     $this->csvHeaderLong = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,extraHeading';
@@ -1219,7 +1219,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Number of unknown column names found in CSV: 0',
+            'Number of unrecognized column names found in CSV: 0',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -1238,7 +1238,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
-            'Number of unknown column names found in CSV: 0',
+            'Number of unrecognized column names found in CSV: 0',
           ],
           CsvBaseTest::TEST_DETAIL => [
           ],
@@ -1257,11 +1257,11 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
-            'Number of unknown column names found in CSV: 1',
-            'Unknown columns will be ignored by AtoM when the CSV is imported.',
+            'Number of unrecognized column names found in CSV: 1',
+            'Unrecognized columns will be ignored by AtoM when the CSV is imported.',
           ],
           CsvBaseTest::TEST_DETAIL => [
-            'Unknown columns: levilOfDescrooption',
+            'Unrecognized columns: levilOfDescrooption',
           ],
         ],
       ],
@@ -1278,13 +1278,15 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
           CsvBaseTest::TEST_TITLE => CsvColumnNameTest::TITLE,
           CsvBaseTest::TEST_STATUS => CsvColumnNameTest::RESULT_WARN,
           CsvBaseTest::TEST_RESULTS => [
-            'Number of unknown column names found in CSV: 1',
-            'Unknown columns will be ignored by AtoM when the CSV is imported.',
-            'Number of unknown columns that may be case related: 1',
+            'Number of unrecognized column names found in CSV: 2',
+            'Unrecognized columns will be ignored by AtoM when the CSV is imported.',
+            'Number of column names with leading or trailing whitespace characters: 1',
+            'Number of unrecognized columns that may be case related: 1',
           ],
           CsvBaseTest::TEST_DETAIL => [
-            'Unknown columns: Title',
-            'Possible match for Title: title'
+            'Unrecognized columns:  identifier,Title',
+            'Column names with leading or trailing whitespace: identifier',
+            'Possible match for Title: title',
           ],
         ],
       ],

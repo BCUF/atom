@@ -30,11 +30,12 @@
 class CsvColumnNameTest extends CsvBaseTest
 {
   // Do not reset in between multiple CSVs.
-  protected $columnNames = [];
-  protected $columnNamesLowercase = [];
+  protected $validColumnNames = [];
+  protected $validColumnNamesLowercase = [];
 
   protected $unknownColumnNames = [];
   protected $caseIssuesColumnNameMap = [];
+  protected $trimIssuesColumnNames = [];
   protected $complete = false;
 
   const TITLE = 'Column Name Validation';
@@ -54,6 +55,7 @@ class CsvColumnNameTest extends CsvBaseTest
     $this->complete = false;
     $this->unknownColumnNames = [];
     $this->caseIssuesColumnNameMap = [];
+    $this->trimIssuesColumnNames = [];
 
     parent::reset();
   }
@@ -64,31 +66,31 @@ class CsvColumnNameTest extends CsvBaseTest
     $resourceTypeBaseConfigFile = $resourceClass .'.yml';
     $config = QubitFlatfileExport::loadResourceConfigFile($resourceTypeBaseConfigFile, 'base');
 
-    $this->columnNames = $config['columnNames'];
+    $this->validColumnNames = $config['columnNames'];
     $standardColumns   = isset($config['direct']) ? $config['direct'] : array();
     $columnMap         = isset($config['map']) ? $config['map'] : array();
     $propertyMap       = isset($config['property']) ? $config['property'] : array();
 
     // If column names/order aren't specified, derive them
-    if ($this->columnNames === null)
+    if ($this->validColumnNames === null)
     {
       // Add standard columns
-      $this->columnNames = ($standardColumns !== null) ? $standardColumns : array();
+      $this->validColumnNames = ($standardColumns !== null) ? $standardColumns : array();
 
       // Add from column map
       if ($columnMap !== null)
       {
-        $this->columnNames = array_merge($this->columnNames, array_values($columnMap));
+        $this->validColumnNames = array_merge($this->validColumnNames, array_values($columnMap));
       }
 
       // Add from property map
       if ($propertyMap !== null)
       {
-        $this->columnNames = array_merge($this->columnNames, array_values($propertyMap));
+        $this->validColumnNames = array_merge($this->validColumnNames, array_values($propertyMap));
       }
     }
 
-    $this->columnNamesLowercase = array_map('strtolower', $this->columnNames);
+    $this->validColumnNamesLowercase = array_map('strtolower', $this->validColumnNames);
   }
 
   public function testRow(array $header, array $row)
@@ -98,23 +100,25 @@ class CsvColumnNameTest extends CsvBaseTest
     // Only do this check once per file.
     if (!$this->complete)
     {
-      $header = array_map('trim', $header);
-
       foreach ($header as $columnName)
       {
-        // If $columnName is not in the list of acceptable columnNames.
-        if (!in_array($columnName, $this->columnNames))
+        // If $columnName is not in validColumnNames.
+        if (!in_array($columnName, $this->validColumnNames))
         {
-          foreach ($this->columnNamesLowercase as $key => $columnNameLowercase)
+          // Test for leading or trailing whitespace.
+          if (in_array(trim($columnName), $this->validColumnNames))
           {
-            if (strtolower($columnName) === $columnNameLowercase)
-            {
-              // Map unknown column name to possible match.
-              $this->caseIssuesColumnNameMap[trim($columnName)] = $this->columnNames[$key];
-            }
+            $this->trimIssuesColumnNames[$columnName] = trim($columnName);
           }
+          // Test if a match is found using lowercase trimmed matching.
+          else if (false !== $key = array_search(strtolower(trim($columnName)), $this->validColumnNamesLowercase))
+          {
+            // Map unknown column name to possible match.
+            $this->caseIssuesColumnNameMap[trim($columnName)] = $this->validColumnNames[$key];
+          }
+
           // Add to unknown column name list.
-          $this->unknownColumnNames[trim($columnName)] = trim($columnName);
+          $this->unknownColumnNames[$columnName] = $columnName;
         }
       }
 
@@ -124,18 +128,26 @@ class CsvColumnNameTest extends CsvBaseTest
 
   public function getTestResult()
   {
-    $this->addTestResult(self::TEST_RESULTS, sprintf("Number of unknown column names found in CSV: %s", count($this->unknownColumnNames)));
+    $this->addTestResult(self::TEST_RESULTS, sprintf("Number of unrecognized column names found in CSV: %s", count($this->unknownColumnNames)));
 
     if (0 < count($this->unknownColumnNames))
     {
       $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-      $this->addTestResult(self::TEST_RESULTS, "Unknown columns will be ignored by AtoM when the CSV is imported.");
-      $this->addTestResult(self::TEST_DETAIL, sprintf("Unknown columns: %s", implode(', ', $this->unknownColumnNames)));
+      $this->addTestResult(self::TEST_RESULTS, "Unrecognized columns will be ignored by AtoM when the CSV is imported.");
+      $this->addTestResult(self::TEST_DETAIL, sprintf("Unrecognized columns: %s", implode(',', $this->unknownColumnNames)));
+    }
+
+    if (0 < count($this->trimIssuesColumnNames))
+    {
+      $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
+      $this->addTestResult(self::TEST_RESULTS, sprintf("Number of column names with leading or trailing whitespace characters: %s", count($this->trimIssuesColumnNames)));
+      $this->addTestResult(self::TEST_DETAIL, sprintf("Column names with leading or trailing whitespace: %s", implode(',', $this->trimIssuesColumnNames)));
     }
 
     if (0 < count($this->caseIssuesColumnNameMap))
     {
-      $this->addTestResult(self::TEST_RESULTS, sprintf("Number of unknown columns that may be case related: %s", count($this->caseIssuesColumnNameMap)));
+      $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
+      $this->addTestResult(self::TEST_RESULTS, sprintf("Number of unrecognized columns that may be case related: %s", count($this->caseIssuesColumnNameMap)));
 
       foreach ($this->caseIssuesColumnNameMap as $key => $value)
       {

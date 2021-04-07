@@ -30,7 +30,7 @@ class CsvColumnCountTest extends CsvBaseTest
   protected $headerCount = null;
   protected $rowCountSummary = [];
 
-  const TITLE = 'CSV Column Check';
+  const TITLE = 'CSV Column Count Check';
 
   public function __construct(array $options = null)
   {
