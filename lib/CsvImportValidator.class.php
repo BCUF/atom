@@ -90,6 +90,7 @@ class CsvImportValidator
         'CsvCultureTest'              => CsvCultureTest::class,
         'CsvLanguageTest'             => CsvLanguageTest::class,
         'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
+        'CsvEventValuesTest'          => CsvEventValuesTest::class,
         'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
       ]
     );

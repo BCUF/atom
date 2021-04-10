@@ -14,6 +14,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
 
     $this->csvHeader = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
 
+    $this->csvHeaderWithEventType = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,eventTypes,eventDates,eventStartDates,eventEndDates,repository,culture';
+    $this->csvHeaderWithAllEventCols = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,eventTypes,eventDates,eventStartDates,eventEndDates,eventActors,eventActorHistories,eventPlaces,repository,culture';
+
     $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
 
     $this->csvHeaderUnknownColumnName = 'legacyId,parentId,identifier,title,levilOfDescrooption,extentAndMedium,repository,culture';
@@ -49,6 +52,30 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       '"","","","Chemise","","","","fr"',
       '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""',
       '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
+    );
+
+    $this->csvDataWithEventType = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","creation","1922-1925","1922","1925","",""',
+      '"","","","Chemise","","","creation","2010","01-01-2010","12-12-2010","","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "creation","2020-2021","Jan 1, 2020","Dec 31 2021", "", ""',
+      '"", "DJ003", "ID4", "Title Four", "","","creation", "1900-1999",1900,1999, "", "en"',
+    );
+
+    $this->csvDataWithEventTypeMismatches = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","creation","1922-1925",,"1925","",""',
+      '"","","","Chemise","","","creation|donation","2010","01-01-2010","","","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", ,"2020-2021","Jan 1, 2020","Dec 31 2021", "", ""',
+      '"", "DJ003", "ID4", "Title Four", "","","creation", "1900-1999",1900,1999, "", "en"',
+    );
+
+    $this->csvDataWithAllEventCols = array(
+      // Note: leading and trailing whitespace in first row is intentional
+      '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","creation","1922-1925","1922","1925",S. Smith,Smith history., Chilliwack, BC,"",""',
+      '"","","","Chemise","","","creation","2010","01-01-2010","12-12-2010",,,,"","fr"',
+      '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "creation","2020-2021","Jan 1, 2020","Dec 31 2021",,,, "", ""',
+      '"", "DJ003", "ID4", "Title Four", "","","creation|donation", "1900|1999",1900|1901,1999|2000,,,, "", "en"',
     );
 
     $this->csvDataDuplicatedLegacyId = array(
@@ -259,6 +286,9 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       'unix_csv_duplicated_headers.csv' => $this->csvHeaderDuplicatedRepositoryCulture . "\n" . implode("\n", $this->csvData),
       'unix_csv_unknown_column_name.csv' => $this->csvHeaderUnknownColumnName . "\n" . implode("\n", $this->csvData),
       'unix_csv_bad_case_column_name.csv' => $this->csvHeaderBadCaseColumnName . "\n" . implode("\n", $this->csvData),
+      'unix_csv_with_event_type.csv' => $this->csvHeaderWithEventType . "\n" . implode("\n", $this->csvDataWithEventType),
+      'unix_csv_with_event_type_mismatches.csv' => $this->csvHeaderWithEventType . "\n" . implode("\n", $this->csvDataWithEventTypeMismatches),
+      'unix_csv_with_event_type_all_cols.csv' => $this->csvHeaderWithAllEventCols . "\n" . implode("\n", $this->csvDataWithAllEventCols),
       'root.csv' => $this->csvHeader . "\n" . implode("\n", $this->csvData),
     ];
 
@@ -1380,6 +1410,76 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
             'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,es,Spanish',
             ',,,Chemise,,,,fr,fr|en',
             ',DJ003,ID4,Title Four,,,,en,en_gb',
+          ],
+        ],
+      ],
+      /**************************************************************************
+       * Test CsvEventValuesTest.class.php
+       *
+       * Tests:
+       * - event columns missing
+       * - subset of event columns present w. each field populated with same # of values
+       * - subset of event columns present w. each field populated with different # of values
+       * - all event columns present w. each field populated with same # (> 1) of values
+       **************************************************************************/
+      [
+        "CsvEventValuesTest-EventColsMissing" => [
+          "csvValidatorClasses" => [ 'CsvEventValuesTest' => CsvEventValuesTest::class ],
+          "filename" => '/unix_csv_without_utf8_bom.csv',
+          "testname" => 'CsvEventValuesTest',
+          CsvBaseTest::TEST_TITLE => CsvEventValuesTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvEventValuesTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'No event columns to check.',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvEventValuesTest-WithEventTypeAndDates" => [
+          "csvValidatorClasses" => [ 'CsvEventValuesTest' => CsvEventValuesTest::class ],
+          "filename" => '/unix_csv_with_event_type.csv',
+          "testname" => 'CsvEventValuesTest',
+          CsvBaseTest::TEST_TITLE => CsvEventValuesTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvEventValuesTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+          ],
+        ],
+      ],
+
+      [
+        "CsvEventValuesTest-WithEventTypeAndDateMismatches" => [
+          "csvValidatorClasses" => [ 'CsvEventValuesTest' => CsvEventValuesTest::class ],
+          "filename" => '/unix_csv_with_event_type_mismatches.csv',
+          "testname" => 'CsvEventValuesTest',
+          CsvBaseTest::TEST_TITLE => CsvEventValuesTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvEventValuesTest::RESULT_WARN,
+          CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates',
+            'Event value mismatches found: 1',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
+            ',,,Chemise,,,creation|donation,2010,01-01-2010,,,fr',
+          ],
+        ],
+      ],
+
+      [
+        "CsvEventValuesTest-WithEventTypeAllColsMatching" => [
+          "csvValidatorClasses" => [ 'CsvEventValuesTest' => CsvEventValuesTest::class ],
+          "filename" => '/unix_csv_with_event_type_all_cols.csv',
+          "testname" => 'CsvEventValuesTest',
+          CsvBaseTest::TEST_TITLE => CsvEventValuesTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvEventValuesTest::RESULT_INFO,
+          CsvBaseTest::TEST_RESULTS => [
+            'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates,eventActors,eventActorHistories,eventPlaces',
+          ],
+          CsvBaseTest::TEST_DETAIL => [
           ],
         ],
       ],
