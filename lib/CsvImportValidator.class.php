@@ -52,17 +52,44 @@ class CsvImportValidator
     'utf32BigEndianBom' => self::UTF32_BIG_ENDIAN_BOM,
   ];
 
-  // Default options
+  // Default options:
+  // Assumes QubitInformationObject if className option not set.
   protected $validatorOptions = [
     'className' => 'QubitInformationObject',
     'verbose'   => false,
     'source'    => '',
     'separator' => ',',
     'enclosure' => '"',
+    'specificTests' => '',
   ];
 
+  // List of valid classNames
   protected $defaultCsvClassNameList = [
     'QubitInformationObject',
+    'QubitActor',
+    'QubitAccession',
+    'QubitRepository',
+    'QubitEvent',
+  ];
+
+  // General tests which can apply to any CSV.
+  protected $generalTestList = [
+    'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
+    'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
+    'CsvColumnNameTest'           => CsvColumnNameTest::class,
+    'CsvColumnCountTest'          => CsvColumnCountTest::class,
+    'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
+    'CsvEmptyRowTest'             => CsvEmptyRowTest::class,
+    'CsvCultureTest'              => CsvCultureTest::class,
+    'CsvLanguageTest'             => CsvLanguageTest::class,
+    'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
+  ];
+
+  // Tests which pertain only to this class type.
+  protected $qubitInformationObjectTestList = [
+    'CsvParentTest'               => CsvParentTest::class,
+    'CsvLegacyIdTest'             => CsvLegacyIdTest::class,
+    'CsvEventValuesTest'          => CsvEventValuesTest::class,
   ];
 
   public function __construct(sfContext $context = null,
@@ -78,22 +105,10 @@ class CsvImportValidator
     $this->dbcon = $dbcon;
     $this->setOptions($options);
 
-    $this->setCsvTests(
-      [
-        'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
-        'CsvColumnNameTest'           => CsvColumnNameTest::class,
-        'CsvColumnCountTest'          => CsvColumnCountTest::class,
-        'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
-        'CsvEmptyRowTest'             => CsvEmptyRowTest::class,
-        'CsvParentTest'               => CsvParentTest::class,
-        'CsvLegacyIdTest'             => CsvLegacyIdTest::class,
-        'CsvCultureTest'              => CsvCultureTest::class,
-        'CsvLanguageTest'             => CsvLanguageTest::class,
-        'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
-        'CsvEventValuesTest'          => CsvEventValuesTest::class,
-        'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
-      ]
-    );
+    if (empty($this->getCsvTests()))
+    {
+      $this->setCsvTests($this->getTestsByClassType());
+    }
 
     $this->setOrmClasses(
       [
@@ -101,6 +116,21 @@ class CsvImportValidator
         'QubitObject'            => QubitObject::class,
       ]
     );
+  }
+
+  public function getTestsByClassType()
+  {
+    $selectedTests = $this->generalTestList;
+
+    switch ($this->validatorOptions['className'])
+    {
+      case 'QubitInformationObject':
+        $selectedTests = array_merge($selectedTests, $this->qubitInformationObjectTestList);
+
+        break;
+    }
+
+    return $selectedTests;
   }
 
   private function handleByteOrderMark($fh)
@@ -314,9 +344,45 @@ class CsvImportValidator
 
         break;
 
+      case 'specificTests':
+        $this->setSpecificTests($value);
+
+        break;
+
       default:
         throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
     }
+  }
+
+  public function setSpecificTests(string $value)
+  {
+    // explode value on ','
+    $tests = explode(',', $value);
+    $validTests = $this->getTestsByClassType();
+    $specifiedTests = [];
+
+    foreach ($tests as $test)
+    {
+      // Is test a key in $validTests?
+      if (array_key_exists($test, $validTests))
+      {
+        // Create test class array.
+        $specifiedTests[$test] = $validTests[$test];
+      }
+      else
+      {
+        throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
+      }
+    }
+
+    // if empty, throw exception
+    if (empty($specifiedTests))
+    {
+      throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
+    }
+
+    // if not empty, run setCsvTests()
+    $this->setCsvTests($specifiedTests);
   }
 
   public function setClassName(string $value)

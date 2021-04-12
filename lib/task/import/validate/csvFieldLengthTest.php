@@ -38,9 +38,9 @@ class CsvFieldLengthTest extends CsvBaseTest
 
   // Associate action with field.
   protected $fieldAction = [
-    "culture"   => CsvBaseTest::RESULT_WARN,
-    "language"  => CsvBaseTest::RESULT_WARN,
-    "script"    => CsvBaseTest::RESULT_WARN,
+    "culture"   => self::RESULT_WARN,
+    "language"  => self::RESULT_WARN,
+    "script"    => self::RESULT_WARN,
   ];
 
   protected $columnsFound = [];

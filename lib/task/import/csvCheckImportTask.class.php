@@ -57,6 +57,10 @@ class csvCheckImportTask extends arBaseTask
         'Qubit object type contained in CSV.',
         'QubitInformationObject'
       ),
+      new sfCommandOption('specific-tests', null,
+        sfCommandOption::PARAMETER_REQUIRED,
+        'Specific test classes to run.'
+      ),
       new sfCommandOption('separator', null,
         sfCommandOption::PARAMETER_REQUIRED,
         'Optional separator parameter sets CSV field separator (1 character).',
@@ -130,15 +134,15 @@ EOF;
     $this->validateOptions($options);
 
     $opts = array();
-    
-    //$validatorOptions = [];
+
     $keymap = [
-      'verbose'     => 'verbose',
-      'source'      => 'source',
-      'class-name'  => 'className',
-      'separator'   => 'separator',
-      'enclosure'   => 'enclosure',
-      'escape'      => 'escape',
+      'verbose'         => 'verbose',
+      'source'          => 'source',
+      'class-name'      => 'className',
+      'separator'       => 'separator',
+      'enclosure'       => 'enclosure',
+      'escape'          => 'escape',
+      'specific-tests'  => 'specificTests',
     ];
 
     foreach ($keymap as $oldkey => $newkey)
