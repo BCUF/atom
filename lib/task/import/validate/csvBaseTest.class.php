@@ -20,143 +20,138 @@
 /**
  * CSV validation test base class.
  *
- * @package    symfony
- * @subpackage task
  * @author     Steve Breker <sbreker@artefactual.com>
  */
-
 abstract class CsvBaseTest
 {
-  // Integer type to allow comparison of severity values.
-  const RESULT_INFO = 0;
-  const RESULT_WARN = 1;
-  const RESULT_ERROR = 2;
+    // Integer type to allow comparison of severity values.
+    const RESULT_INFO = 0;
+    const RESULT_WARN = 1;
+    const RESULT_ERROR = 2;
 
-  const TEST_TITLE = 'title';
-  const TEST_STATUS = 'status';
-  const TEST_RESULTS = 'results';
-  const TEST_DETAIL = 'details';
+    const TEST_TITLE = 'title';
+    const TEST_STATUS = 'status';
+    const TEST_RESULTS = 'results';
+    const TEST_DETAIL = 'details';
 
-  const HEADER_PLACEHOLDER = 'EXTRA_COLUMN';
+    const HEADER_PLACEHOLDER = 'EXTRA_COLUMN';
 
-  protected $testData = array();
+    protected $testData = [];
 
-  protected $filename = '';
-  protected $columnCount = 0;
-  protected $rowNumber = 1;
-  protected $title = '';
-  protected $options = [];
-  protected $ormClasses = [];
+    protected $filename = '';
+    protected $columnCount = 0;
+    protected $rowNumber = 1;
+    protected $title = '';
+    protected $options = [];
+    protected $ormClasses = [];
 
-  public function __construct(array $options = null)
-  {
-    if (isset($options))
+    public function __construct(array $options = null)
     {
-      $this->setOptions($options);
-    }
-  }
-  
-  public function testRow(array $header, array $row)
-  {
-    $this->rowNumber++;
-  }
-
-  public function reset()
-  {
-    $this->testData = [
-      self::TEST_TITLE => $this->title,
-      self::TEST_STATUS => self::RESULT_INFO,
-      self::TEST_RESULTS => array(),
-      self::TEST_DETAIL => array(),
-    ];
-  }
-
-  protected function addTestResult(string $datatype, string $value)
-  {
-    switch ($datatype)
-    {
-      case self::TEST_STATUS:
-        // Only update when severity increases.
-        if ($value > $this->testData[$datatype])
-        {
-          $this->testData[$datatype] = intval($value);
+        if (isset($options)) {
+            $this->setOptions($options);
         }
-        break;
-
-      case self::TEST_RESULTS:
-      case self::TEST_DETAIL:
-        $this->testData[$datatype][] = $value;
-        break;
-
-      default: 
-        throw new sfException('Unknown test result datatype in csvBaseTest.');
-    } 
-  }
-
-  protected function combineRow(array $header, array $row)
-  {
-    // Enforce header has $columnCount elements. Add elements if necessary.
-    for ($i = count($header); $i < $this->columnCount; $i++) {
-      $header[] = sprintf("%s-%d", self::HEADER_PLACEHOLDER, $i);
-    }
-    // Enforce row has $columnCount elements.
-    for ($i = count($row); $i < $this->columnCount; $i++) {
-      $row[] = '';
     }
 
-    // return array_combined row, trim each element.
-    return array_combine(array_map('trim', $header), array_map('trim', $row));
-  }
-
-  public function setOrmClasses(array $classes)
-  {
-    $this->ormClasses = $classes;
-  }
-
-  public function setOptions(array $options)
-  {
-    $this->options = $options;
-  }
-
-  public function setFilename(string $filename)
-  {
-    $this->filename = $filename;
-  }
-
-  public function getFilename()
-  {
-    return $this->filename;
-  }
-
-  public function setTitle(string $title)
-  {
-    $this->title = $title;
-
-    if (isset($this->testData[self::TEST_TITLE]))
+    public function testRow(array $header, array $row)
     {
-      $this->testData[self::TEST_TITLE] = $title;
+        ++$this->rowNumber;
     }
-  }
 
-  public function getTitle(): string
-  {
-    return $this->title;
-  }
+    public function reset()
+    {
+        $this->testData = [
+            self::TEST_TITLE => $this->title,
+            self::TEST_STATUS => self::RESULT_INFO,
+            self::TEST_RESULTS => [],
+            self::TEST_DETAIL => [],
+        ];
+    }
 
-  public function setColumnCount(int $count)
-  {
-    $this->columnCount = $count;
-  }
+    public function setOrmClasses(array $classes)
+    {
+        $this->ormClasses = $classes;
+    }
 
-  public function getColumnCount(): int
-  {
-    return $this->columnCount;
-  }
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+    }
 
-  public function getTestResult()
-  {
-    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-    
-    return $this->testData;
-  }
+    public function setFilename(string $filename)
+    {
+        $this->filename = $filename;
+    }
+
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
+
+        if (isset($this->testData[self::TEST_TITLE])) {
+            $this->testData[self::TEST_TITLE] = $title;
+        }
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setColumnCount(int $count)
+    {
+        $this->columnCount = $count;
+    }
+
+    public function getColumnCount(): int
+    {
+        return $this->columnCount;
+    }
+
+    public function getTestResult()
+    {
+        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+
+        return $this->testData;
+    }
+
+    protected function addTestResult(string $datatype, string $value)
+    {
+        switch ($datatype) {
+            case self::TEST_STATUS:
+                // Only update when severity increases.
+                if ($value > $this->testData[$datatype]) {
+                    $this->testData[$datatype] = intval($value);
+                }
+
+                break;
+
+            case self::TEST_RESULTS:
+            case self::TEST_DETAIL:
+                $this->testData[$datatype][] = $value;
+
+                break;
+
+            default:
+                throw new sfException('Unknown test result datatype in csvBaseTest.');
+        }
+    }
+
+    protected function combineRow(array $header, array $row)
+    {
+        // Enforce header has $columnCount elements. Add elements if necessary.
+        for ($i = count($header); $i < $this->columnCount; ++$i) {
+            $header[] = sprintf('%s-%d', self::HEADER_PLACEHOLDER, $i);
+        }
+        // Enforce row has $columnCount elements.
+        for ($i = count($row); $i < $this->columnCount; ++$i) {
+            $row[] = '';
+        }
+
+        // return array_combined row, trim each element.
+        return array_combine(array_map('trim', $header), array_map('trim', $row));
+    }
 }

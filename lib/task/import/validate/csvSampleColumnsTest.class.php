@@ -20,57 +20,53 @@
 /**
  * CSV Sample Values test. Output column names and a sample value from first
  * populated row found. Only populated columns are included.
- * 
- * @package    symfony
- * @subpackage task
+ *
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvSampleValuesTest extends CsvBaseTest
 {
-  protected $values = [];
+    const TITLE = 'Sample Values';
+    protected $values = [];
 
-  const TITLE = 'Sample Values';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->values = [];
-    
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-    $row = $this->combineRow($header, $row);
-
-    foreach ($row as $columnName => $value)
+    public function __construct(array $options = null)
     {
-      // Create sample values array.
-      if (!array_key_exists($columnName, $this->values) && !empty($value))
-      {
-        $this->values[$columnName] = $value;
-      }
-    }
-  }
+        parent::__construct($options);
 
-  public function getTestResult()
-  {
-    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-
-    foreach ($this->values as $columnName => $sampleValue)
-    {
-      $this->addTestResult(self::TEST_RESULTS, sprintf("%s:  %s", $columnName, $sampleValue));
+        $this->setTitle(self::TITLE);
+        $this->reset();
     }
 
-    return parent::getTestResult();
-  }
+    public function reset()
+    {
+        $this->values = [];
+
+        parent::reset();
+    }
+
+    public function testRow(array $header, array $row)
+    {
+        parent::testRow($header, $row);
+        $row = $this->combineRow($header, $row);
+
+        foreach ($row as $columnName => $value) {
+            // Create sample values array.
+            if (!array_key_exists($columnName, $this->values) && !empty($value)) {
+                $this->values[$columnName] = $value;
+            }
+        }
+    }
+
+    public function getTestResult()
+    {
+        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+
+        foreach ($this->values as $columnName => $sampleValue) {
+            $this->addTestResult(self::TEST_RESULTS, sprintf('%s:  %s', $columnName, $sampleValue));
+        }
+
+        return parent::getTestResult();
+    }
 }

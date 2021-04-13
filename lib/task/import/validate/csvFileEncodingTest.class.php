@@ -20,126 +20,111 @@
 /**
  * CSV UTF8 encoding validation.
  *
- * @package    symfony
- * @subpackage task
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvFileEncodingTest extends CsvBaseTest
 {
-  protected $utf8BomPresent = null;
-  protected $utf8Compatible = true;
+    const TITLE = 'UTF-8 File Encoding Check';
+    protected $utf8BomPresent;
+    protected $utf8Compatible = true;
 
-  const TITLE = 'UTF-8 File Encoding Check';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->utf8BomPresent = null;
-    $this->utf8Compatible = true;
-
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-    $row = $this->combineRow($header, $row);
-
-    if (null === $this->utf8BomPresent)
+    public function __construct(array $options = null)
     {
-      CsvImportValidator::validateFileName($this->filename);
-      $this->utf8BomPresent = $this->detectBom();
+        parent::__construct($options);
+
+        $this->setTitle(self::TITLE);
+        $this->reset();
     }
 
-    // If row is not UTF-8 compatible.
-    if (!$this->isRowUtf8EncodingCompatible($row))
+    public function reset()
     {
-      $this->utf8Compatible = false;
+        $this->utf8BomPresent = null;
+        $this->utf8Compatible = true;
 
-      // Add row that triggered this to the output.
-      $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
-    }
-  }
-
-  protected function finalizeTestResults()
-  {
-    if ($this->utf8Compatible)
-    {
-      $this->addTestResult(self::TEST_RESULTS, 'File encoding is UTF-8 compatible.');
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-    }
-    else 
-    {
-      $this->addTestResult(self::TEST_RESULTS, 'File encoding does not appear to be UTF-8 compatible.');
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+        parent::reset();
     }
 
-    if (null !== $this->utf8BomPresent && false !== $this->utf8BomPresent)
+    public function testRow(array $header, array $row)
     {
-      switch ($this->utf8BomPresent)
-      {
-        case 'utf8Bom':
-          $this->addTestResult(self::TEST_RESULTS, 'This file includes a UTF-8 BOM.');
-          $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        parent::testRow($header, $row);
+        $row = $this->combineRow($header, $row);
 
-          break;
+        if (null === $this->utf8BomPresent) {
+            CsvImportValidator::validateFileName($this->filename);
+            $this->utf8BomPresent = $this->detectBom();
+        }
 
-        default:
-          $this->addTestResult(self::TEST_RESULTS, 'This file includes a unicode BOM, but it is not UTF-8.');
-          $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-      }
-    }
-  }
+        // If row is not UTF-8 compatible.
+        if (!$this->isRowUtf8EncodingCompatible($row)) {
+            $this->utf8Compatible = false;
 
-  public function getTestResult()
-  {
-    $this->finalizeTestResults();
-
-    return parent::getTestResult();
-  }
-
-  public function detectBom()
-  {
-    if (false === $fh = fopen($this->filename, 'rb'))
-    {
-      throw new sfException('You must specify a valid filename');
+            // Add row that triggered this to the output.
+            $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+        }
     }
 
-    foreach (CsvImportValidator::$bomTypeMap as $key => $value)
+    public function getTestResult()
     {
-      if (false === $data = fread($fh, strlen($value)))
-      {
-        throw new sfException('Failed to read from CSV file in csvFileEncodingTest.');
-      }
+        $this->finalizeTestResults();
 
-      if (0 === strncmp($data, $value, strlen($value)))
-      {
-        // BOM detected. Return the type.
-        return $key;
-      }
-
-      if (false === rewind($fh))
-      {
-        throw new sfException('Rewinding file position failed in handleByteOrderMark.');
-      }
+        return parent::getTestResult();
     }
 
-    return false;
-  }
+    public function detectBom()
+    {
+        if (false === $fh = fopen($this->filename, 'rb')) {
+            throw new sfException('You must specify a valid filename');
+        }
 
-  public function isRowUtf8EncodingCompatible($row)
-  {
-    // Test row contents for UTF-8 incompatible encodings.
-    $result = mb_detect_encoding(implode("", $row), 'UTF-8', true);
-    
-    return $result;
-  }
+        foreach (CsvImportValidator::$bomTypeMap as $key => $value) {
+            if (false === $data = fread($fh, strlen($value))) {
+                throw new sfException('Failed to read from CSV file in csvFileEncodingTest.');
+            }
+
+            if (0 === strncmp($data, $value, strlen($value))) {
+                // BOM detected. Return the type.
+                return $key;
+            }
+
+            if (false === rewind($fh)) {
+                throw new sfException('Rewinding file position failed in handleByteOrderMark.');
+            }
+        }
+
+        return false;
+    }
+
+    public function isRowUtf8EncodingCompatible($row)
+    {
+        // Test row contents for UTF-8 incompatible encodings.
+        return mb_detect_encoding(implode('', $row), 'UTF-8', true);
+    }
+
+    protected function finalizeTestResults()
+    {
+        if ($this->utf8Compatible) {
+            $this->addTestResult(self::TEST_RESULTS, 'File encoding is UTF-8 compatible.');
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        } else {
+            $this->addTestResult(self::TEST_RESULTS, 'File encoding does not appear to be UTF-8 compatible.');
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+        }
+
+        if (null !== $this->utf8BomPresent && false !== $this->utf8BomPresent) {
+            switch ($this->utf8BomPresent) {
+                case 'utf8Bom':
+                    $this->addTestResult(self::TEST_RESULTS, 'This file includes a UTF-8 BOM.');
+                    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+
+                    break;
+
+                default:
+                    $this->addTestResult(self::TEST_RESULTS, 'This file includes a unicode BOM, but it is not UTF-8.');
+                    $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+            }
+        }
+    }
 }

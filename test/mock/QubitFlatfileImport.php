@@ -21,15 +21,12 @@ namespace AccessToMemory\test\mock;
 
 class QubitFlatfileImport
 {
-  public static function fetchKeymapEntryBySourceAndTargetName($sourceId, $sourceName, $targetName)
-  {
-    if (!empty($sourceId) && !empty($sourceName) && !empty($targetName))
+    public static function fetchKeymapEntryBySourceAndTargetName($sourceId, $sourceName, $targetName)
     {
-      return 1;
+        if (!empty($sourceId) && !empty($sourceName) && !empty($targetName)) {
+            return 1;
+        }
+
+        return false;
     }
-    else
-    {
-      return false;
-    }
-  }
 }

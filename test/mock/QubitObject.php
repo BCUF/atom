@@ -21,16 +21,15 @@ namespace AccessToMemory\test\mock;
 
 class QubitObject
 {
-  public $className;
+    public $className;
 
-  public static function getBySlug($parentSlug)
-  {
-    if (!empty($parentSlug) && 'missing-slug' !== $parentSlug)
+    public static function getBySlug($parentSlug)
     {
-      $obj = new self();
-      $obj->className = 'QubitInformationObject';
+        if (!empty($parentSlug) && 'missing-slug' !== $parentSlug) {
+            $obj = new self();
+            $obj->className = 'QubitInformationObject';
 
-      return $obj;
+            return $obj;
+        }
     }
-  }
 }

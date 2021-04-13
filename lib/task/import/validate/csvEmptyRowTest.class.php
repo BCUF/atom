@@ -20,73 +20,66 @@
 /**
  * CSV empty row test. Test for rows which are:
  *  -  completely empty
- *  -  have CSV fields but all are entirely empty
- * 
- * @package    symfony
- * @subpackage task
+ *  -  have CSV fields but all are entirely empty.
+ *
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvEmptyRowTest extends CsvBaseTest
 {
-  protected $headerIsBlank = null;
-  protected $blankRowSummary = [];
+    const TITLE = 'CSV Empty Row Check';
+    protected $headerIsBlank;
+    protected $blankRowSummary = [];
 
-  const TITLE = 'CSV Empty Row Check';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->headerIsBlank = null;
-    $this->blankRowSummary = [];
-
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-
-    // Test if header is blank
-    if (!isset($this->headerIsBlank))
+    public function __construct(array $options = null)
     {
-      $this->headerIsBlank = strlen(trim(implode($header))) == 0;
-    }
-    
-    // Test if row is blank. Record line numbers of blank rows.
-    if (strlen(trim(implode($row))) == 0)
-    {
-      $this->blankRowSummary[] = $this->rowNumber;
-    }
-  }
+        parent::__construct($options);
 
-  public function getTestResult()
-  {
-    if ($this->headerIsBlank)
-    {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-      $this->addTestResult(self::TEST_RESULTS, sprintf("CSV Header is blank."));
+        $this->setTitle(self::TITLE);
+        $this->reset();
     }
 
-    if (0 < count($this->blankRowSummary))
+    public function reset()
     {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-      $this->addTestResult(self::TEST_RESULTS, sprintf("CSV blank row count: %s", count($this->blankRowSummary)));
-      $this->addTestResult(self::TEST_DETAIL, sprintf("Blank row numbers: %s", implode(', ', $this->blankRowSummary)));
-    }
-    else
-    {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-      $this->addTestResult(self::TEST_RESULTS, sprintf("CSV does not have any blank rows."));
+        $this->headerIsBlank = null;
+        $this->blankRowSummary = [];
+
+        parent::reset();
     }
 
-    return parent::getTestResult();
-  }
+    public function testRow(array $header, array $row)
+    {
+        parent::testRow($header, $row);
+
+        // Test if header is blank
+        if (!isset($this->headerIsBlank)) {
+            $this->headerIsBlank = 0 == strlen(trim(implode($header)));
+        }
+
+        // Test if row is blank. Record line numbers of blank rows.
+        if (0 == strlen(trim(implode($row)))) {
+            $this->blankRowSummary[] = $this->rowNumber;
+        }
+    }
+
+    public function getTestResult()
+    {
+        if ($this->headerIsBlank) {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV Header is blank.'));
+        }
+
+        if (0 < count($this->blankRowSummary)) {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV blank row count: %s', count($this->blankRowSummary)));
+            $this->addTestResult(self::TEST_DETAIL, sprintf('Blank row numbers: %s', implode(', ', $this->blankRowSummary)));
+        } else {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV does not have any blank rows.'));
+        }
+
+        return parent::getTestResult();
+    }
 }

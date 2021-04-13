@@ -19,72 +19,63 @@
 
 /**
  * CSV Duplicate column name test. Throw error if any column names are repeated in the file.
- * 
- * @package    symfony
- * @subpackage task
+ *
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvDuplicateColumnNameTest extends CsvBaseTest
 {
-  protected $columnFrequency = [];
+    const TITLE = 'Duplicate Column Name Check';
+    protected $columnFrequency = [];
 
-  const TITLE = 'Duplicate Column Name Check';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->columnFrequency = [];
-    
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-    $header = array_map('trim', $header);
-
-    // Only empty on first iteration.
-    if (empty($this->columnFrequency))
+    public function __construct(array $options = null)
     {
-      foreach ($header as $columnName)
-      {
-        if (!array_key_exists($columnName, $this->columnFrequency))
-        {
-          $this->columnFrequency[$columnName] = 1;
+        parent::__construct($options);
+
+        $this->setTitle(self::TITLE);
+        $this->reset();
+    }
+
+    public function reset()
+    {
+        $this->columnFrequency = [];
+
+        parent::reset();
+    }
+
+    public function testRow(array $header, array $row)
+    {
+        parent::testRow($header, $row);
+        $header = array_map('trim', $header);
+
+        // Only empty on first iteration.
+        if (empty($this->columnFrequency)) {
+            foreach ($header as $columnName) {
+                if (!array_key_exists($columnName, $this->columnFrequency)) {
+                    $this->columnFrequency[$columnName] = 1;
+                } else {
+                    ++$this->columnFrequency[$columnName];
+                }
+            }
         }
-        else
-        {
-          $this->columnFrequency[$columnName]++;
+    }
+
+    public function getTestResult()
+    {
+        foreach ($this->columnFrequency as $columnName => $count) {
+            if (1 < $count) {
+                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+                $this->addTestResult(self::TEST_RESULTS, sprintf("Columns with name '%s': %s", $columnName, $count));
+            }
         }
-      }
-    }
-  }
+        // No duplicate header values when array_unique has only one element, and last element's value === 1.
+        if (1 === count(array_unique($this->columnFrequency)) && 1 === end($this->columnFrequency)) {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+            $this->addTestResult(self::TEST_RESULTS, 'No duplicate column names found.');
+        }
 
-  public function getTestResult()
-  {
-    foreach ($this->columnFrequency as $columnName => $count)
-    {
-      if (1 < $count)
-      {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Columns with name '%s': %s", $columnName, $count));
-      }
+        return parent::getTestResult();
     }
-    // No duplicate header values when array_unique has only one element, and last element's value === 1.
-    if (1 === count(array_unique($this->columnFrequency)) && 1 === end($this->columnFrequency))
-    {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-      $this->addTestResult(self::TEST_RESULTS, "No duplicate column names found.");
-    }
-
-    return parent::getTestResult();
-  }
 }

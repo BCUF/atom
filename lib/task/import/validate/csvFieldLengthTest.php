@@ -20,106 +20,95 @@
 /**
  * CSV field length test. Define fields to be checked and their max lengths.
  * Allow to trigger either warning or error by column type.
- * 
- * @package    symfony
- * @subpackage task
+ *
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvFieldLengthTest extends CsvBaseTest
 {
-  // Add fields to check legth of here with max len. Anything larger than this value will
-  // trigger the default action.
-  protected $fieldMaxSizes = [
-    "culture"   => 6,
-    "language"  => 6,
-    "script"    => 6,
-  ];
+    const TITLE = 'Field Length Check';
+    // Add fields to check legth of here with max len. Anything larger than this value will
+    // trigger the default action.
+    protected $fieldMaxSizes = [
+        'culture' => 6,
+        'language' => 6,
+        'script' => 6,
+    ];
 
-  // Associate action with field.
-  protected $fieldAction = [
-    "culture"   => self::RESULT_WARN,
-    "language"  => self::RESULT_WARN,
-    "script"    => self::RESULT_WARN,
-  ];
+    // Associate action with field.
+    protected $fieldAction = [
+        'culture' => self::RESULT_WARN,
+        'language' => self::RESULT_WARN,
+        'script' => self::RESULT_WARN,
+    ];
 
-  protected $columnsFound = [];
-  protected $columnsChecked = false;
+    protected $columnsFound = [];
+    protected $columnsChecked = false;
 
-  const TITLE = 'Field Length Check';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->columnsFound = [];
-    $this->columnsChecked = false;
-
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-    $row = $this->combineRow($header, $row);
-
-    // Check which columns are present on first row read.
-    if (!$this->columnsChecked)
+    public function __construct(array $options = null)
     {
-      // Loop over each configured column check and see if they are present in the import CSV.
-      foreach ($this->fieldMaxSizes as $columnName => $fieldSize)
-      {
-        if (array_key_exists($columnName, $row))
-        {
-          $this->columnsFound[$columnName] = 0;
-        } 
-      }
+        parent::__construct($options);
 
-      $this->columnsChecked = true;
+        $this->setTitle(self::TITLE);
+        $this->reset();
     }
 
-    // Check each field present.
-    foreach ($this->columnsFound as $columnName => $errorCount)
+    public function reset()
     {
-      // Check if value length is greater than configured max field length.
-      if (strlen($row[$columnName]) > $this->fieldMaxSizes[$columnName])
-      {
-        $this->columnsFound[$columnName]++;
+        $this->columnsFound = [];
+        $this->columnsChecked = false;
 
-        $this->addTestResult(self::TEST_DETAIL, sprintf("%s column value: %s", $columnName, $row[$columnName]));
-      }
-    }
-  }
-
-  public function getTestResult()
-  {
-    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-
-    if (empty($this->columnsFound))
-    {
-      $this->addTestResult(self::TEST_RESULTS, "No columns to check.");
-    }
-    else
-    {
-      $this->addTestResult(self::TEST_RESULTS, sprintf("Checking columns: %s", implode(",", array_keys($this->columnsFound))));
+        parent::reset();
     }
 
-    foreach ($this->columnsFound as $columnName => $errorCount)
+    public function testRow(array $header, array $row)
     {
-      if (0 < $errorCount)
-      {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-        $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' column may have invalid values.", $columnName));
-      }
-      $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' values that exceed %s characters: %s", $columnName, $this->fieldMaxSizes[$columnName], $errorCount));
+        parent::testRow($header, $row);
+        $row = $this->combineRow($header, $row);
+
+        // Check which columns are present on first row read.
+        if (!$this->columnsChecked) {
+            // Loop over each configured column check and see if they are present in the import CSV.
+            foreach ($this->fieldMaxSizes as $columnName => $fieldSize) {
+                if (array_key_exists($columnName, $row)) {
+                    $this->columnsFound[$columnName] = 0;
+                }
+            }
+
+            $this->columnsChecked = true;
+        }
+
+        // Check each field present.
+        foreach ($this->columnsFound as $columnName => $errorCount) {
+            // Check if value length is greater than configured max field length.
+            if (strlen($row[$columnName]) > $this->fieldMaxSizes[$columnName]) {
+                ++$this->columnsFound[$columnName];
+
+                $this->addTestResult(self::TEST_DETAIL, sprintf('%s column value: %s', $columnName, $row[$columnName]));
+            }
+        }
     }
 
-    return parent::getTestResult();
-  }
+    public function getTestResult()
+    {
+        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+
+        if (empty($this->columnsFound)) {
+            $this->addTestResult(self::TEST_RESULTS, 'No columns to check.');
+        } else {
+            $this->addTestResult(self::TEST_RESULTS, sprintf('Checking columns: %s', implode(',', array_keys($this->columnsFound))));
+        }
+
+        foreach ($this->columnsFound as $columnName => $errorCount) {
+            if (0 < $errorCount) {
+                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
+                $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' column may have invalid values.", $columnName));
+            }
+            $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' values that exceed %s characters: %s", $columnName, $this->fieldMaxSizes[$columnName], $errorCount));
+        }
+
+        return parent::getTestResult();
+    }
 }

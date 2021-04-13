@@ -19,87 +19,77 @@
 
 /**
  * CSV column count test. Test all rows in CSV have the same number of columns.
- * 
- * @package    symfony
- * @subpackage task
+ *
  * @author     Steve Breker <sbreker@artefactual.com>
+ *
+ * @internal
+ * @coversNothing
  */
-
 class CsvColumnCountTest extends CsvBaseTest
 {
-  protected $headerCount = null;
-  protected $rowCountSummary = [];
+    const TITLE = 'CSV Column Count Check';
+    protected $headerCount;
+    protected $rowCountSummary = [];
 
-  const TITLE = 'CSV Column Count Check';
-
-  public function __construct(array $options = null)
-  {
-    parent::__construct($options);
-
-    $this->setTitle(self::TITLE);
-    $this->reset();
-  }
-
-  public function reset()
-  {
-    $this->headerCount = null;
-    $this->rowCountSummary = [];
-    
-    parent::reset();
-  }
-
-  public function testRow(array $header, array $row)
-  {
-    parent::testRow($header, $row);
-
-    if (!isset($this->headerCount))
+    public function __construct(array $options = null)
     {
-      $this->headerCount = count($header);
+        parent::__construct($options);
 
-      $this->updateRowCountSummary($this->headerCount);
+        $this->setTitle(self::TITLE);
+        $this->reset();
     }
-    
-    $this->updateRowCountSummary(count($row));
-  }
 
-  public function getTestResult()
-  {
-    // When rows are all same length then rowCountSummary will have 1 row.
-    if (1 == count($this->rowCountSummary))
+    public function reset()
     {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-      $this->addTestResult(self::TEST_RESULTS, sprintf("Number of columns in CSV: %s", $this->headerCount));
+        $this->headerCount = null;
+        $this->rowCountSummary = [];
 
-      // Set a warning if there's less than 2 columns. This is probably an issue with field separators.
-      if (1 >= $this->headerCount)
-      {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-        $this->addTestResult(self::TEST_RESULTS, "CSV appears to have only one column - check CSV separator option matches file.");
-      }
+        parent::reset();
     }
-    else
-    {
-      $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
 
-      foreach ($this->rowCountSummary as $columnCount => $numOccurrences)
-      {
-        $this->addTestResult(self::TEST_RESULTS, sprintf("Number of rows with %s columns: %s", $columnCount, $numOccurrences));
-      }
-      $this->addTestResult(self::TEST_RESULTS, "CSV rows with different lengths detected - check CSV enclosure option matches file.");
-    }
-    
-    return parent::getTestResult();
-  }
+    public function testRow(array $header, array $row)
+    {
+        parent::testRow($header, $row);
 
-  protected function updateRowCountSummary(int $numColumns)
-  {
-    if (array_key_exists($numColumns, $this->rowCountSummary))
-    {
-      $this->rowCountSummary[$numColumns]++;
+        if (!isset($this->headerCount)) {
+            $this->headerCount = count($header);
+
+            $this->updateRowCountSummary($this->headerCount);
+        }
+
+        $this->updateRowCountSummary(count($row));
     }
-    else
+
+    public function getTestResult()
     {
-      $this->rowCountSummary[$numColumns] = 1;
+        // When rows are all same length then rowCountSummary will have 1 row.
+        if (1 == count($this->rowCountSummary)) {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+            $this->addTestResult(self::TEST_RESULTS, sprintf('Number of columns in CSV: %s', $this->headerCount));
+
+            // Set a warning if there's less than 2 columns. This is probably an issue with field separators.
+            if (1 >= $this->headerCount) {
+                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
+                $this->addTestResult(self::TEST_RESULTS, 'CSV appears to have only one column - check CSV separator option matches file.');
+            }
+        } else {
+            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+
+            foreach ($this->rowCountSummary as $columnCount => $numOccurrences) {
+                $this->addTestResult(self::TEST_RESULTS, sprintf('Number of rows with %s columns: %s', $columnCount, $numOccurrences));
+            }
+            $this->addTestResult(self::TEST_RESULTS, 'CSV rows with different lengths detected - check CSV enclosure option matches file.');
+        }
+
+        return parent::getTestResult();
     }
-  }
+
+    protected function updateRowCountSummary(int $numColumns)
+    {
+        if (array_key_exists($numColumns, $this->rowCountSummary)) {
+            ++$this->rowCountSummary[$numColumns];
+        } else {
+            $this->rowCountSummary[$numColumns] = 1;
+        }
+    }
 }

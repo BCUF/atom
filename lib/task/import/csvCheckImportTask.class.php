@@ -25,189 +25,181 @@
  */
 class csvCheckImportTask extends arBaseTask
 {
-  protected $verbose = null;
+    protected $verbose;
 
-  protected function configure()
-  {
-    $this->addArguments(array(
-      new sfCommandArgument('filename', sfCommandArgument::REQUIRED,
-        'The input file name (csv format).')
-    ));
+    /**
+     * @see sfTask
+     *
+     * @param mixed $arguments
+     * @param mixed $options
+     */
+    public function execute($arguments = [], $options = [])
+    {
+        parent::execute($arguments, $options);
 
-    $this->addOptions(array(
-      new sfCommandOption('application', null,
-        sfCommandOption::PARAMETER_OPTIONAL, 'The application name', 'qubit'
-      ),
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED,
-        'The environment', 'cli'
-      ),
-      new sfCommandOption('connection', null,
-        sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'
-      ),
-      new sfCommandOption('verbose', 'i',
-        sfCommandOption::PARAMETER_NONE,
-        'Provide detailed information regarding each test'
-      ),
-      new sfCommandOption('source', null,
-        sfCommandOption::PARAMETER_REQUIRED,
-        'Source name for validating parentId matching against previous imports. If not set, parentId validation against AtoM\'s database will be skipped.'
-      ),
-      new sfCommandOption('class-name', null,
-        sfCommandOption::PARAMETER_REQUIRED,
-        'Qubit object type contained in CSV.',
-        'QubitInformationObject'
-      ),
-      new sfCommandOption('specific-tests', null,
-        sfCommandOption::PARAMETER_REQUIRED,
-        'Specific test classes to run.'
-      ),
-      new sfCommandOption('separator', null,
-        sfCommandOption::PARAMETER_REQUIRED,
-        'Optional separator parameter sets CSV field separator (1 character).',
-        ','
-      ),
-      new sfCommandOption('enclosure', null,
-        sfCommandOption::PARAMETER_REQUIRED,
-        'Optional enclosure parameter sets CSV field enclosure character (1 character).',
-        '"'
-      ),
-    ));
+        $validatorOptions = $this->setOptions($options);
 
-    $this->namespace = 'csv';
-    $this->name = 'check-import';
-    $this->briefDescription = 'Check CSV data, providing diagnostic info.';
-    $this->detailedDescription = <<<EOF
+        if (isset($options['verbose']) && $options['verbose']) {
+            $this->verbose = true;
+        }
+
+        $filenames = $this->setCsvValidatorFilenames($arguments['filename']);
+
+        $validator = new CsvImportValidator(
+            $this->context, $this->getDbConnection(), $validatorOptions);
+
+        $validator->setShowDisplayProgress(true);
+        $validator->setFilenames($filenames);
+        $results = $validator->validate();
+        $this->printResults($results);
+
+        unset($validator);
+    }
+
+    protected function configure()
+    {
+        $this->addArguments([
+            new sfCommandArgument('filename', sfCommandArgument::REQUIRED,
+              'The input file name (csv format).'),
+        ]);
+
+        $this->addOptions([
+            new sfCommandOption('application', null,
+                sfCommandOption::PARAMETER_OPTIONAL, 'The application name', 'qubit'
+            ),
+            new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED,
+              'The environment', 'cli'
+            ),
+            new sfCommandOption('connection', null,
+                sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'
+            ),
+            new sfCommandOption('verbose', 'i',
+                sfCommandOption::PARAMETER_NONE,
+                'Provide detailed information regarding each test'
+            ),
+            new sfCommandOption('source', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Source name for validating parentId matching against previous imports. If not set, parentId validation against AtoM\'s database will be skipped.'
+            ),
+            new sfCommandOption('class-name', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Qubit object type contained in CSV.',
+                'QubitInformationObject'
+            ),
+            new sfCommandOption('specific-tests', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Specific test classes to run.'
+            ),
+            new sfCommandOption('separator', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Optional separator parameter sets CSV field separator (1 character).',
+                ','
+            ),
+            new sfCommandOption('enclosure', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Optional enclosure parameter sets CSV field enclosure character (1 character).',
+                '"'
+            ),
+        ]);
+
+        $this->namespace = 'csv';
+        $this->name = 'check-import';
+        $this->briefDescription = 'Check CSV data, providing diagnostic info.';
+        $this->detailedDescription = <<<'EOF'
     Check CSV data, providing information about it.
 EOF;
-  }
-
-  /**
-   * @see sfTask
-   */
-  public function execute($arguments = array(), $options = array())
-  {
-    parent::execute($arguments, $options);
-    
-    $validatorOptions = $this->setOptions($options);
-
-    if (isset($options['verbose']) && $options['verbose'])
-    {
-      $this->verbose = true;
     }
 
-    $filenames = $this->setCsvValidatorFilenames($arguments['filename']);
-
-    $validator = new CsvImportValidator(
-      $this->context, $this->getDbConnection(), $validatorOptions);
-
-    $validator->setShowDisplayProgress(true);
-    $validator->setFilenames($filenames);
-    $results = $validator->validate();
-    $this->printResults($results);
-
-    unset($validator);
-  }
-
-  protected function getDbConnection()
-  {
-    $databaseManager = new sfDatabaseManager($this->configuration);
-
-    return $databaseManager->getDatabase('propel')->getConnection();
-  }
-
-
-  protected function setCsvValidatorFilenames($filenameString)
-  {
-    // Could be a comma separated list of filenames or just one.
-    $filenames = explode(',', $filenameString);
-
-    foreach ($filenames as $filename)
+    protected function getDbConnection()
     {
-      CsvImportValidator::validateFileName($filename);
+        $databaseManager = new sfDatabaseManager($this->configuration);
+
+        return $databaseManager->getDatabase('propel')->getConnection();
     }
 
-    return $filenames;
-  }
-
-  protected function setOptions($options = [])
-  {
-    $this->validateOptions($options);
-
-    $opts = array();
-
-    $keymap = [
-      'verbose'         => 'verbose',
-      'source'          => 'source',
-      'class-name'      => 'className',
-      'separator'       => 'separator',
-      'enclosure'       => 'enclosure',
-      'escape'          => 'escape',
-      'specific-tests'  => 'specificTests',
-    ];
-
-    foreach ($keymap as $oldkey => $newkey)
+    protected function setCsvValidatorFilenames($filenameString)
     {
-      if (empty($options[$oldkey]))
-      {
-        continue;
-      }
+        // Could be a comma separated list of filenames or just one.
+        $filenames = explode(',', $filenameString);
 
-      $opts[$newkey] = $options[$oldkey];
-    }
-
-    return $opts;
-  }
-
-  protected function validateOptions($options = [])
-  {
-    // Throw exception here if set option is invalid.
-    
-    // TODO: Add validation of class-name
-  }
-
-  protected function formatStatus(int $status)
-  {
-    switch ($status)
-    {
-      case csvBaseTest::RESULT_INFO:
-        return "info";
-
-        case csvBaseTest::RESULT_WARN:
-        return "Warning";
-
-      case csvBaseTest::RESULT_ERROR:
-        return "ERROR";
-    }
-  }
-
-  protected function printResults(array $results)
-  {
-    foreach ($results as $filename => $fileGroup)
-    {      
-      $fileStr = sprintf("\nFilename: %s", $filename);
-      printf("%s\n", $fileStr);
-      printf("%s\n", str_repeat("=", strlen($fileStr)) );
-
-      foreach ($fileGroup as $testResult)
-      {
-        printf("\n%s - %s\n", $testResult['title'], $this->formatStatus($testResult['status']));
-        printf("%s\n", str_repeat("-", strlen($testResult['title'])) );
-
-        foreach($testResult['results'] as $line)
-        {
-          printf("%s\n", $line);
+        foreach ($filenames as $filename) {
+            CsvImportValidator::validateFileName($filename);
         }
 
-        if ($this->verbose && 0 < count($testResult['details']))
-        {
-          printf("\nDetails:\n");
-
-          foreach($testResult['details'] as $line)
-          {
-            printf("%s\n", $line);
-          }
-        }
-      }
+        return $filenames;
     }
-  }
+
+    protected function setOptions($options = [])
+    {
+        $this->validateOptions($options);
+
+        $opts = [];
+
+        $keymap = [
+            'verbose' => 'verbose',
+            'source' => 'source',
+            'class-name' => 'className',
+            'separator' => 'separator',
+            'enclosure' => 'enclosure',
+            'escape' => 'escape',
+            'specific-tests' => 'specificTests',
+        ];
+
+        foreach ($keymap as $oldkey => $newkey) {
+            if (empty($options[$oldkey])) {
+                continue;
+            }
+
+            $opts[$newkey] = $options[$oldkey];
+        }
+
+        return $opts;
+    }
+
+    protected function validateOptions($options = [])
+    {
+        // Throw exception here if set option is invalid.
+
+        // TODO: Add validation of class-name
+    }
+
+    protected function formatStatus(int $status)
+    {
+        switch ($status) {
+            case csvBaseTest::RESULT_INFO:
+                return 'info';
+
+              case csvBaseTest::RESULT_WARN:
+                return 'Warning';
+
+            case csvBaseTest::RESULT_ERROR:
+                return 'ERROR';
+        }
+    }
+
+    protected function printResults(array $results)
+    {
+        foreach ($results as $filename => $fileGroup) {
+            $fileStr = sprintf("\nFilename: %s", $filename);
+            printf("%s\n", $fileStr);
+            printf("%s\n", str_repeat('=', strlen($fileStr)));
+
+            foreach ($fileGroup as $testResult) {
+                printf("\n%s - %s\n", $testResult['title'], $this->formatStatus($testResult['status']));
+                printf("%s\n", str_repeat('-', strlen($testResult['title'])));
+
+                foreach ($testResult['results'] as $line) {
+                    printf("%s\n", $line);
+                }
+
+                if ($this->verbose && 0 < count($testResult['details'])) {
+                    printf("\nDetails:\n");
+
+                    foreach ($testResult['details'] as $line) {
+                        printf("%s\n", $line);
+                    }
+                }
+            }
+        }
+    }
 }

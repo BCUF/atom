@@ -20,485 +20,433 @@
 require_once __DIR__.'/../vendor/composer/autoload.php';
 
 /**
- * Check csv data
+ * Check csv data.
  *
- * @package    symfony
- * @subpackage task
  * @author     Steve Breker <sbreker@artefactual.com>
  */
 class CsvImportValidator
 {
-  protected $context;
-  protected $dbcon;
-  protected $filenames = [];
-  protected $csvTests = null;
-  protected $header;
-  protected $rows = [];
-  protected $showDisplayProgress = false;
-  protected $results = [];
-  protected $ormClasses = [];
+    const UTF8_BOM = "\xEF\xBB\xBF";
+    const UTF16_LITTLE_ENDIAN_BOM = "\xFF\xFE";
+    const UTF16_BIG_ENDIAN_BOM = "\xFE\xFF";
+    const UTF32_LITTLE_ENDIAN_BOM = "\xFF\xFE\x00\x00";
+    const UTF32_BIG_ENDIAN_BOM = "\x00\x00\xFE\xFF";
 
-  const UTF8_BOM = "\xEF\xBB\xBF";
-  const UTF16_LITTLE_ENDIAN_BOM = "\xFF\xFE";
-  const UTF16_BIG_ENDIAN_BOM = "\xFE\xFF";
-  const UTF32_LITTLE_ENDIAN_BOM = "\xFF\xFE\x00\x00";
-  const UTF32_BIG_ENDIAN_BOM = "\x00\x00\xFE\xFF";
+    public static $bomTypeMap = [
+        'utf8Bom' => self::UTF8_BOM,
+        'utf16LittleEndianBom' => self::UTF16_LITTLE_ENDIAN_BOM,
+        'utf16BigEndianBom' => self::UTF16_BIG_ENDIAN_BOM,
+        'utf32LittleEndianBom' => self::UTF32_LITTLE_ENDIAN_BOM,
+        'utf32BigEndianBom' => self::UTF32_BIG_ENDIAN_BOM,
+    ];
+    protected $context;
+    protected $dbcon;
+    protected $filenames = [];
+    protected $csvTests;
+    protected $header;
+    protected $rows = [];
+    protected $showDisplayProgress = false;
+    protected $results = [];
+    protected $ormClasses = [];
 
-  static $bomTypeMap = [
-    'utf8Bom' => self::UTF8_BOM,
-    'utf16LittleEndianBom' => self::UTF16_LITTLE_ENDIAN_BOM,
-    'utf16BigEndianBom' => self::UTF16_BIG_ENDIAN_BOM,
-    'utf32LittleEndianBom' => self::UTF32_LITTLE_ENDIAN_BOM,
-    'utf32BigEndianBom' => self::UTF32_BIG_ENDIAN_BOM,
-  ];
+    // Default options:
+    // Assumes QubitInformationObject if className option not set.
+    protected $validatorOptions = [
+        'className' => 'QubitInformationObject',
+        'verbose' => false,
+        'source' => '',
+        'separator' => ',',
+        'enclosure' => '"',
+        'specificTests' => '',
+    ];
 
-  // Default options:
-  // Assumes QubitInformationObject if className option not set.
-  protected $validatorOptions = [
-    'className' => 'QubitInformationObject',
-    'verbose'   => false,
-    'source'    => '',
-    'separator' => ',',
-    'enclosure' => '"',
-    'specificTests' => '',
-  ];
+    // List of valid classNames
+    protected $defaultCsvClassNameList = [
+        'QubitInformationObject',
+        'QubitActor',
+        'QubitAccession',
+        'QubitRepository',
+        'QubitEvent',
+    ];
 
-  // List of valid classNames
-  protected $defaultCsvClassNameList = [
-    'QubitInformationObject',
-    'QubitActor',
-    'QubitAccession',
-    'QubitRepository',
-    'QubitEvent',
-  ];
+    // General tests which can apply to any CSV.
+    protected $generalTestList = [
+        'CsvSampleValuesTest' => CsvSampleValuesTest::class,
+        'CsvFileEncodingTest' => CsvFileEncodingTest::class,
+        'CsvColumnNameTest' => CsvColumnNameTest::class,
+        'CsvColumnCountTest' => CsvColumnCountTest::class,
+        'CsvDuplicateColumnNameTest' => CsvDuplicateColumnNameTest::class,
+        'CsvEmptyRowTest' => CsvEmptyRowTest::class,
+        'CsvCultureTest' => CsvCultureTest::class,
+        'CsvLanguageTest' => CsvLanguageTest::class,
+        'CsvFieldLengthTest' => CsvFieldLengthTest::class,
+    ];
 
-  // General tests which can apply to any CSV.
-  protected $generalTestList = [
-    'CsvSampleValuesTest'        => CsvSampleValuesTest::class,
-    'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
-    'CsvColumnNameTest'           => CsvColumnNameTest::class,
-    'CsvColumnCountTest'          => CsvColumnCountTest::class,
-    'CsvDuplicateColumnNameTest'  => CsvDuplicateColumnNameTest::class,
-    'CsvEmptyRowTest'             => CsvEmptyRowTest::class,
-    'CsvCultureTest'              => CsvCultureTest::class,
-    'CsvLanguageTest'             => CsvLanguageTest::class,
-    'CsvFieldLengthTest'          => CsvFieldLengthTest::class,
-  ];
+    // Tests which pertain only to this class type.
+    protected $qubitInformationObjectTestList = [
+        'CsvParentTest' => CsvParentTest::class,
+        'CsvLegacyIdTest' => CsvLegacyIdTest::class,
+        'CsvEventValuesTest' => CsvEventValuesTest::class,
+    ];
 
-  // Tests which pertain only to this class type.
-  protected $qubitInformationObjectTestList = [
-    'CsvParentTest'               => CsvParentTest::class,
-    'CsvLegacyIdTest'             => CsvLegacyIdTest::class,
-    'CsvEventValuesTest'          => CsvEventValuesTest::class,
-  ];
-
-  public function __construct(sfContext $context = null,
+    public function __construct(sfContext $context = null,
     $dbcon = null,
-    $options = array())
-  {
-    if (null === $context)
+    $options = [])
     {
-      $context = new sfContext(ProjectConfiguration::getActive());
-    }
-
-    $this->setContext($context);
-    $this->dbcon = $dbcon;
-    $this->setOptions($options);
-
-    if (empty($this->getCsvTests()))
-    {
-      $this->setCsvTests($this->getTestsByClassType());
-    }
-
-    $this->setOrmClasses(
-      [
-        'QubitFlatfileImport'    => QubitFlatfileImport::class,
-        'QubitObject'            => QubitObject::class,
-      ]
-    );
-  }
-
-  public function getTestsByClassType()
-  {
-    $selectedTests = $this->generalTestList;
-
-    switch ($this->validatorOptions['className'])
-    {
-      case 'QubitInformationObject':
-        $selectedTests = array_merge($selectedTests, $this->qubitInformationObjectTestList);
-
-        break;
-    }
-
-    return $selectedTests;
-  }
-
-  private function handleByteOrderMark($fh)
-  {
-    foreach (self::$bomTypeMap as $key => $value)
-    {
-      if (false === $data = fread($fh, strlen($value)))
-      {
-        throw new sfException('Failed to read from CSV file in handleByteOrderMark.');
-      }
-
-      if (0 === strncmp($data, $value, strlen($value)))
-      {
-        return; // Just eat the BOM and move on from this file position
-      }
-
-      // No BOM, rewind the file handle position
-      if (false === rewind($fh))
-      {
-        throw new sfException('Rewinding file position failed in handleByteOrderMark.');
-      }
-    }
-  }
-
-  public function loadCsvData($fh)
-  {
-    $this->handleByteOrderMark($fh);
-    $this->header = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure'));
-
-    if ($this->header === false)
-    {
-      throw new sfException('Could not read initial row. File could be empty.');
-    }
-
-    $this->rows = [];
-    while ($item = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure')))
-    {
-      $this->rows[] = $item;
-    }
-
-    // Remove trailing blank lines. Iterate over array from bottom up, 
-    // removing empty rows.
-    for ($i = count($this->rows) - 1; $i >= 0; $i--)
-    {
-      if (!(1 == count($this->rows[$i]) && empty(trim(implode('', $this->rows[$i])))))
-      {
-        return;
-      }
-      else
-      {
-        unset($this->rows[$i]);
-      }
-    }
-  }
-
-  protected function getLongestRow() : int
-  {
-    $rowsMaxCount = count(max($this->rows));
-    $headerCount = count($this->header);
-
-    if ($rowsMaxCount > $headerCount)
-    {
-      return $rowsMaxCount;
-    }
-    else
-    {
-      return count($this->header);
-    }
-  }
-
-  public function validate()
-  {
-    foreach ($this->filenames as $filename)
-    {
-      if (false === $fh = fopen($filename, 'rb'))
-      {
-        throw new sfException('You must specify a valid filename');
-      }
-
-      $this->loadCsvData($fh);
-
-      // Set specifics for this csv file
-      foreach ($this->csvTests as $test)
-      {
-        $test->setOrmClasses($this->ormClasses);
-        $test->setFilename($filename);
-        $test->setColumnCount($this->getLongestRow());
-      }
-
-      // Iterate csv rows, calling each test/row.
-      foreach ($this->rows as $row)
-      {
-        if ($this->showDisplayProgress)
-        {
-          print $this->renderProgressDescription();
+        if (null === $context) {
+            $context = new sfContext(ProjectConfiguration::getActive());
         }
-        
-        foreach ($this->csvTests as $test)
-        {
-          $test->testRow($this->header, $row);
+
+        $this->setContext($context);
+        $this->dbcon = $dbcon;
+        $this->setOptions($options);
+
+        if (empty($this->getCsvTests())) {
+            $this->setCsvTests($this->getTestsByClassType());
         }
-      }
 
-      // Gather results for this CSV file. 
-      // Call reset() on each test.
-      foreach ($this->csvTests as $testkey => $test)
-      {
-        $this->results[$filename][$testkey] = $test->getTestResult();
-        $test->reset();
-      }
+        $this->setOrmClasses(
+            [
+                'QubitFlatfileImport' => QubitFlatfileImport::class,
+                'QubitObject' => QubitObject::class,
+            ]
+        );
     }
 
-    if ($this->showDisplayProgress)
+    public function getTestsByClassType()
     {
-      print $this->renderProgressDescription(true);
+        $selectedTests = $this->generalTestList;
+
+        switch ($this->validatorOptions['className']) {
+            case 'QubitInformationObject':
+                $selectedTests = array_merge($selectedTests, $this->qubitInformationObjectTestList);
+
+                break;
+        }
+
+        return $selectedTests;
     }
 
-    return $this->results;
-  }
-
-  public function setShowDisplayProgress(bool $value)
-  {
-    $this->showDisplayProgress = $value;
-  }
-
-  public function getContext()
-  {
-    return $this->context;
-  }
-
-  public function setContext($context)
-  {
-    $this->context = $context;
-  }  
-
-  public function getResults()
-  {
-    return $this->results;
-  }
-
-  public function getResultsByFilenameTestname(string $filename, string $testname)
-  {
-    if (isset($filename) && isset($testname))
+    public function loadCsvData($fh)
     {
-      if (isset($this->results[$filename][$testname]))
-      {
-        return $this->results[$filename][$testname];
-      }
-    }
-  }
+        $this->handleByteOrderMark($fh);
+        $this->header = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure'));
 
-  public function setOrmClasses(array $classes)
-  {
-    $this->ormClasses = $classes;
-  }
+        if (false === $this->header) {
+            throw new sfException('Could not read initial row. File could be empty.');
+        }
 
-  public function setCsvTests(array $classes)
-  {
-    unset($this->csvTests);
+        $this->rows = [];
+        while ($item = fgetcsv($fh, 60000, $this->getOption('separator'), $this->getOption('enclosure'))) {
+            $this->rows[] = $item;
+        }
 
-    foreach($classes as $key => $class)
-    {
-      $this->csvTests[$key] = new $class($this->getOptions());
-    }
-  }
+        // Remove trailing blank lines. Iterate over array from bottom up,
+        // removing empty rows.
+        for ($i = count($this->rows) - 1; $i >= 0; --$i) {
+            if (!(1 == count($this->rows[$i]) && empty(trim(implode('', $this->rows[$i]))))) {
+                return;
+            }
 
-  public function getCsvTests()
-  {
-    return $this->csvTests;
-  }
-
-  public function setOptions(array $options = null)
-  {
-    if (empty($options))
-    {
-      return;
+            unset($this->rows[$i]);
+        }
     }
 
-    foreach ($options as $name => $val)
+    public function validate()
     {
-      $this->setOption($name, $val);
+        foreach ($this->filenames as $filename) {
+            if (false === $fh = fopen($filename, 'rb')) {
+                throw new sfException('You must specify a valid filename');
+            }
+
+            $this->loadCsvData($fh);
+
+            // Set specifics for this csv file
+            foreach ($this->csvTests as $test) {
+                $test->setOrmClasses($this->ormClasses);
+                $test->setFilename($filename);
+                $test->setColumnCount($this->getLongestRow());
+            }
+
+            // Iterate csv rows, calling each test/row.
+            foreach ($this->rows as $row) {
+                if ($this->showDisplayProgress) {
+                    echo $this->renderProgressDescription();
+                }
+
+                foreach ($this->csvTests as $test) {
+                    $test->testRow($this->header, $row);
+                }
+            }
+
+            // Gather results for this CSV file.
+            // Call reset() on each test.
+            foreach ($this->csvTests as $testkey => $test) {
+                $this->results[$filename][$testkey] = $test->getTestResult();
+                $test->reset();
+            }
+        }
+
+        if ($this->showDisplayProgress) {
+            echo $this->renderProgressDescription(true);
+        }
+
+        return $this->results;
     }
-  }
 
-  public function setOption(string $name, $value)
-  {
-    switch ($name)
+    public function setShowDisplayProgress(bool $value)
     {
-      case 'className':
-        $this->setClassName($value);
+        $this->showDisplayProgress = $value;
+    }
 
-        break;
+    public function getContext()
+    {
+        return $this->context;
+    }
 
-      case 'verbose':
-        $this->setVerbose($value);
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
 
-        break;
+    public function getResults()
+    {
+        return $this->results;
+    }
 
-      case 'source':
-        $this->setSource($value);
+    public function getResultsByFilenameTestname(string $filename, string $testname)
+    {
+        if (isset($filename, $testname)) {
+            if (isset($this->results[$filename][$testname])) {
+                return $this->results[$filename][$testname];
+            }
+        }
+    }
 
-        break;
+    public function setOrmClasses(array $classes)
+    {
+        $this->ormClasses = $classes;
+    }
 
-      case 'separator':
-        $this->setSeparator($value);
+    public function setCsvTests(array $classes)
+    {
+        unset($this->csvTests);
 
-        break;
+        foreach ($classes as $key => $class) {
+            $this->csvTests[$key] = new $class($this->getOptions());
+        }
+    }
 
-      case 'enclosure':
-        $this->setEnclosure($value);
+    public function getCsvTests()
+    {
+        return $this->csvTests;
+    }
 
-        break;
+    public function setOptions(array $options = null)
+    {
+        if (empty($options)) {
+            return;
+        }
 
-      case 'specificTests':
-        $this->setSpecificTests($value);
+        foreach ($options as $name => $val) {
+            $this->setOption($name, $val);
+        }
+    }
 
-        break;
+    public function setOption(string $name, $value)
+    {
+        switch ($name) {
+            case 'className':
+                $this->setClassName($value);
 
-      default:
+                break;
+
+            case 'verbose':
+                $this->setVerbose($value);
+
+                break;
+
+            case 'source':
+                $this->setSource($value);
+
+                break;
+
+            case 'separator':
+                $this->setSeparator($value);
+
+                break;
+
+            case 'enclosure':
+                $this->setEnclosure($value);
+
+                break;
+
+            case 'specificTests':
+                $this->setSpecificTests($value);
+
+                break;
+
+            default:
+                throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
+        }
+    }
+
+    public function setSpecificTests(string $value)
+    {
+        // explode value on ','
+        $tests = explode(',', $value);
+        $validTests = $this->getTestsByClassType();
+        $specifiedTests = [];
+
+        foreach ($tests as $test) {
+            // Is test a key in $validTests?
+            if (array_key_exists($test, $validTests)) {
+                // Create test class array.
+                $specifiedTests[$test] = $validTests[$test];
+            } else {
+                throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
+            }
+        }
+
+        // if empty, throw exception
+        if (empty($specifiedTests)) {
+            throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
+        }
+
+        $this->validatorOptions['specificTests'] = $value;
+
+        $this->setCsvTests($specifiedTests);
+    }
+
+    public function setClassName(string $value)
+    {
+        if (in_array($value, $this->defaultCsvClassNameList)) {
+            $this->validatorOptions['className'] = $value;
+        } else {
+            throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
+        }
+    }
+
+    public function setVerbose(bool $value)
+    {
+        $this->validatorOptions['verbose'] = $value;
+    }
+
+    public function setSource(string $value)
+    {
+        $this->validatorOptions['source'] = $value;
+    }
+
+    public function setSeparator(string $value)
+    {
+        if (1 != strlen($value)) {
+            throw new UnexpectedValueException(sprintf('Invalid separator "%s".', $value));
+        }
+
+        $this->validatorOptions['separator'] = $value;
+    }
+
+    public function setEnclosure(string $value)
+    {
+        if (1 != strlen($value)) {
+            throw new UnexpectedValueException(sprintf('Invalid enclosure "%s".', $value));
+        }
+
+        $this->validatorOptions['enclosure'] = $value;
+    }
+
+    public function getOption(string $name)
+    {
+        if (array_key_exists($name, $this->validatorOptions)) {
+            return $this->validatorOptions[$name];
+        }
+
         throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
     }
-  }
 
-  public function setSpecificTests(string $value)
-  {
-    // explode value on ','
-    $tests = explode(',', $value);
-    $validTests = $this->getTestsByClassType();
-    $specifiedTests = [];
-
-    foreach ($tests as $test)
+    public function getOptions()
     {
-      // Is test a key in $validTests?
-      if (array_key_exists($test, $validTests))
-      {
-        // Create test class array.
-        $specifiedTests[$test] = $validTests[$test];
-      }
-      else
-      {
-        throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
-      }
+        return $this->validatorOptions;
     }
 
-    // if empty, throw exception
-    if (empty($specifiedTests))
+    public function getDbCon()
     {
-      throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
+        if (null === $this->dbcon) {
+            $this->dbcon = Propel::getConnection();
+        }
+
+        return $this->dbcon;
     }
 
-    $this->validatorOptions['specificTests'] = $value;
-
-    $this->setCsvTests($specifiedTests);
-  }
-
-  public function setClassName(string $value)
-  {
-    if (in_array($value, $this->defaultCsvClassNameList))
+    public function setFilenames(array $filenames)
     {
-      $this->validatorOptions['className'] = $value;
-    }
-    else
-    {
-      throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
-    }
-  }
+        foreach ($filenames as $filename) {
+            self::validateFileName($filename);
+        }
 
-  public function setVerbose(bool $value)
-  {
-    $this->validatorOptions['verbose'] = $value;
-  }
-
-  public function setSource(string $value)
-  {
-    $this->validatorOptions['source'] = $value;
-  }
-
-  public function setSeparator(string $value)
-  {
-    if (1 != strlen($value))
-    {
-      throw new UnexpectedValueException(sprintf('Invalid separator "%s".', $value));
+        $this->filenames = $filenames;
     }
 
-    $this->validatorOptions['separator'] = $value;
-  }
-
-  public function setEnclosure(string $value)
-  {
-    if (1 != strlen($value))
+    public function getRowCount()
     {
-      throw new UnexpectedValueException(sprintf('Invalid enclosure "%s".', $value));
+        return count($this->rows);
     }
 
-    $this->validatorOptions['enclosure'] = $value;
-  }
-
-  public function getOption(String $name)
-  {
-    if (array_key_exists($name, $this->validatorOptions))
+    public static function validateFilename($filename)
     {
-      return $this->validatorOptions[$name];
-    }
-    else
-    {
-      throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
-    }
-  }
+        if (empty($filename)) {
+            throw new sfException('Please specify a valid filename.');
+        }
 
-  public function getOptions()
-  {
-    return $this->validatorOptions;
-  }
+        if (!file_exists($filename)) {
+            throw new sfException(sprintf('Can not find file %s', $filename));
+        }
 
-  public function getDbCon()
-  {
-    if (null === $this->dbcon)
-    {
-      $this->dbcon = Propel::getConnection();
+        if (!is_readable($filename)) {
+            throw new sfException(sprintf('Can not read %s', $filename));
+        }
+
+        return $filename;
     }
 
-    return $this->dbcon;
-  }
-
-  public function setFilenames(array $filenames)
-  {
-    foreach ($filenames as $filename)
+    public function renderProgressDescription(bool $complete = false)
     {
-      self::validateFileName($filename);
+        $output = '.';
+
+        if ($complete) {
+            return "\nAnalysis complete.\n";
+        }
+
+        return $output;
     }
 
-    $this->filenames = $filenames;
-  }
-
-  public function getRowCount()
-  {
-    return (count($this->rows));
-  }
-
-  public static function validateFilename($filename)
-  {
-    if (empty($filename))
+    protected function getLongestRow(): int
     {
-      throw new sfException('Please specify a valid filename.');
+        $rowsMaxCount = count(max($this->rows));
+        $headerCount = count($this->header);
+
+        if ($rowsMaxCount > $headerCount) {
+            return $rowsMaxCount;
+        }
+
+        return count($this->header);
     }
 
-    if (!file_exists($filename))
+    private function handleByteOrderMark($fh)
     {
-      throw new sfException(sprintf('Can not find file %s', $filename));
+        foreach (self::$bomTypeMap as $key => $value) {
+            if (false === $data = fread($fh, strlen($value))) {
+                throw new sfException('Failed to read from CSV file in handleByteOrderMark.');
+            }
+
+            if (0 === strncmp($data, $value, strlen($value))) {
+                return; // Just eat the BOM and move on from this file position
+            }
+
+            // No BOM, rewind the file handle position
+            if (false === rewind($fh)) {
+                throw new sfException('Rewinding file position failed in handleByteOrderMark.');
+            }
+        }
     }
-
-    if (!is_readable($filename))
-    {
-      throw new sfException(sprintf('Can not read %s', $filename));
-    }
-
-    return $filename;
-  }
-
-  public function renderProgressDescription(bool $complete = false)
-  {
-    $output = '.';
-
-    if ($complete)
-    {
-      return "\nAnalysis complete.\n";
-    }
-
-    return $output;
-  }
 }
