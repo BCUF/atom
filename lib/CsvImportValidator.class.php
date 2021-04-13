@@ -74,7 +74,7 @@ class CsvImportValidator
 
   // General tests which can apply to any CSV.
   protected $generalTestList = [
-    'CsvSampleColumnsTest'        => CsvSampleColumnsTest::class,
+    'CsvSampleValuesTest'        => CsvSampleValuesTest::class,
     'CsvFileEncodingTest'         => CsvFileEncodingTest::class,
     'CsvColumnNameTest'           => CsvColumnNameTest::class,
     'CsvColumnCountTest'          => CsvColumnCountTest::class,
@@ -381,7 +381,8 @@ class CsvImportValidator
       throw new UnexpectedValueException(sprintf('Invalid tests "%s".', $value));
     }
 
-    // if not empty, run setCsvTests()
+    $this->validatorOptions['specificTests'] = $value;
+
     $this->setCsvTests($specifiedTests);
   }
 

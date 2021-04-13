@@ -348,7 +348,7 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
   {
     $this->expectException(UnexpectedValueException::class);
     $csvValidator = new CsvImportValidator($this->context, null, null);
-    $csvValidator->setOption('className', 'QubitAccession');
+    $csvValidator->setOption('className', 'QubitProperty');
   }
 
   public function testSetValidVerboseTypeOption()
@@ -365,12 +365,50 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
     $this->assertSame('testfilename.csv', $csvValidator->getOption('source'));
   }
 
+  public function testSetSeparatorOption()
+  {
+    $csvValidator = new CsvImportValidator($this->context, null, null);
+    $csvValidator->setOption('separator', ';');
+    $this->assertSame(';', $csvValidator->getOption('separator'));
+  }
+
+  public function testSetInvalidSeparatorOption()
+  {
+    $this->expectException(UnexpectedValueException::class);
+    $csvValidator = new CsvImportValidator($this->context, null, null);
+    $csvValidator->setOption('separator', ';;');
+  }
+
+  public function testSetEnclosureOption()
+  {
+    $csvValidator = new CsvImportValidator($this->context, null, null);
+    $csvValidator->setOption('enclosure', "'");
+    $this->assertSame("'", $csvValidator->getOption('enclosure'));
+  }
+
+  public function testSetInvalidEnclosureOption()
+  {
+    $this->expectException(UnexpectedValueException::class);
+    $csvValidator = new CsvImportValidator($this->context, null, null);
+    $csvValidator->setOption('enclosure', '""');
+  }
+
+  public function testSetSpecificTestsOption()
+  {
+    $csvValidator = new CsvImportValidator($this->context, null, null);
+    $csvValidator->setOption('specificTests', 'CsvSampleValuesTest,CsvLegacyIdTest');
+    $this->assertSame('CsvSampleValuesTest,CsvLegacyIdTest', $csvValidator->getOption('specificTests'));
+  }
+
   public function testDefaultOptions()
   {
     $csvValidator = new CsvImportValidator($this->context, null, null);
     $this->assertSame(false, $csvValidator->getOption('verbose'));
     $this->assertSame('QubitInformationObject', $csvValidator->getOption('className'));
     $this->assertSame('', $csvValidator->getOption('source'));
+    $this->assertSame(',', $csvValidator->getOption('separator'));
+    $this->assertSame('"', $csvValidator->getOption('enclosure'));
+    $this->assertSame('', $csvValidator->getOption('specificTests'));
   }
 
   /**************************************************************************
@@ -561,18 +599,18 @@ class CsvImportValidatorTest extends \PHPUnit\Framework\TestCase
       ],
 
       /**************************************************************************
-       * Test csvSampleColumnsTest.class.php
+       * Test CsvSampleValuesTest.class.php
        * 
        * CSV Sample Values test. Outputs column names and a sample value from first
        * populated row found. Only populated columns are included.
        **************************************************************************/
       [
-        "CsvSampleColumnsTest-testSampleValues" => [
-          "csvValidatorClasses" => [ 'CsvSampleColumnsTest' => CsvSampleColumnsTest::class ],
+        "CsvSampleValuesTest-testSampleValues" => [
+          "csvValidatorClasses" => [ 'CsvSampleValuesTest' => CsvSampleValuesTest::class ],
           "filename" => '/unix_csv_without_utf8_bom.csv',
-          "testname" => 'CsvSampleColumnsTest',
-          CsvBaseTest::TEST_TITLE => CsvSampleColumnsTest::TITLE,
-          CsvBaseTest::TEST_STATUS => CsvSampleColumnsTest::RESULT_INFO,
+          "testname" => 'CsvSampleValuesTest',
+          CsvBaseTest::TEST_TITLE => CsvSampleValuesTest::TITLE,
+          CsvBaseTest::TEST_STATUS => CsvSampleValuesTest::RESULT_INFO,
           CsvBaseTest::TEST_RESULTS => [
             'legacyId:  B10101',
             'parentId:  DJ001',

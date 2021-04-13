@@ -26,7 +26,7 @@
  * @author     Steve Breker <sbreker@artefactual.com>
  */
 
-class CsvSampleColumnsTest extends CsvBaseTest
+class CsvSampleValuesTest extends CsvBaseTest
 {
   protected $values = [];
 
