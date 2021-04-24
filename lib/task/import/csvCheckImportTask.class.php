@@ -90,6 +90,10 @@ class csvCheckImportTask extends arBaseTask
                 sfCommandOption::PARAMETER_REQUIRED,
                 'Specific test classes to run.'
             ),
+            new sfCommandOption('path-to-digital-objects', null,
+                sfCommandOption::PARAMETER_REQUIRED,
+                'Path to root of digital object folder that will match digitalObjectPath in CSV.'
+            ),
             new sfCommandOption('separator', null,
                 sfCommandOption::PARAMETER_REQUIRED,
                 'Optional separator parameter sets CSV field separator (1 character).',
@@ -143,6 +147,7 @@ EOF;
             'enclosure' => 'enclosure',
             'escape' => 'escape',
             'specific-tests' => 'specificTests',
+            'path-to-digital-objects' => 'pathToDigitalObjects',
         ];
 
         foreach ($keymap as $oldkey => $newkey) {

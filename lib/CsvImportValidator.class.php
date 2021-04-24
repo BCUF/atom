@@ -58,6 +58,7 @@ class CsvImportValidator
         'separator' => ',',
         'enclosure' => '"',
         'specificTests' => '',
+        'pathToDigitalObjects' => '',
     ];
 
     // List of valid classNames
@@ -87,6 +88,8 @@ class CsvImportValidator
         'CsvParentTest' => CsvParentTest::class,
         'CsvLegacyIdTest' => CsvLegacyIdTest::class,
         'CsvEventValuesTest' => CsvEventValuesTest::class,
+        'CsvDigitalObjectPathTest' => CsvDigitalObjectPathTest::class,
+        'CsvDigitalObjectUriTest' => CsvDigitalObjectUriTest::class,
     ];
 
     public function __construct(sfContext $context = null,
@@ -100,10 +103,6 @@ class CsvImportValidator
         $this->setContext($context);
         $this->dbcon = $dbcon;
         $this->setOptions($options);
-
-        if (empty($this->getCsvTests())) {
-            $this->setCsvTests($this->getTestsByClassType());
-        }
 
         $this->setOrmClasses(
             [
@@ -154,6 +153,10 @@ class CsvImportValidator
 
     public function validate()
     {
+        if (empty($this->getCsvTests())) {
+            $this->setCsvTests($this->getTestsByClassType());
+        }
+
         foreach ($this->filenames as $filename) {
             if (false === $fh = fopen($filename, 'rb')) {
                 throw new sfException('You must specify a valid filename');
@@ -286,14 +289,23 @@ class CsvImportValidator
 
                 break;
 
+            case 'pathToDigitalObjects':
+                $this->setPathToDigitalObjects($value);
+
+                break;
+
             default:
                 throw new UnexpectedValueException(sprintf('Invalid option "%s".', $name));
         }
     }
 
+    public function setPathToDigitalObjects(string $value)
+    {
+        $this->validatorOptions['pathToDigitalObjects'] = $value;
+    }
+
     public function setSpecificTests(string $value)
     {
-        // explode value on ','
         $tests = explode(',', $value);
         $validTests = $this->getTestsByClassType();
         $specifiedTests = [];
