@@ -22,7 +22,7 @@
  *
  * @author     Steve Breker <sbreker@artefactual.com>
  */
-abstract class CsvBaseTest
+abstract class CsvBaseValidator
 {
     // Integer type to allow comparison of severity values.
     const RESULT_INFO = 0;
@@ -136,7 +136,7 @@ abstract class CsvBaseTest
                 break;
 
             default:
-                throw new sfException('Unknown test result datatype in csvBaseTest.');
+                throw new sfException('Unknown test result datatype in csvBaseValidator.');
         }
     }
 

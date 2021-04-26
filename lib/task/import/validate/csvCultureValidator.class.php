@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvCultureTest extends CsvBaseTest
+class CsvCultureValidator extends CsvBaseValidator
 {
     const TITLE = 'Culture Check';
     protected $cultureColumnPresent;

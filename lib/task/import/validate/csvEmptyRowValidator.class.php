@@ -27,7 +27,7 @@
  * @internal
  * @coversNothing
  */
-class CsvEmptyRowTest extends CsvBaseTest
+class CsvEmptyRowValidator extends CsvBaseValidator
 {
     const TITLE = 'CSV Empty Row Check';
     protected $headerIsBlank;

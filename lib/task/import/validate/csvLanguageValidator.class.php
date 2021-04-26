@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvLanguageTest extends CsvBaseTest
+class CsvLanguageValidator extends CsvBaseValidator
 {
     const TITLE = 'Language Check';
     protected $languages = [];

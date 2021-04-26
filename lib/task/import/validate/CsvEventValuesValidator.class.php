@@ -29,7 +29,7 @@
  * @internal
  * @coversNothing
  */
-class CsvEventValuesTest extends CsvBaseTest
+class CsvEventValuesValidator extends CsvBaseValidator
 {
     const TITLE = 'Event Value Count Test';
     protected $matchList = [

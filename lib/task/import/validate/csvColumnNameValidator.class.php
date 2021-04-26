@@ -27,7 +27,7 @@
  * @internal
  * @coversNothing
  */
-class CsvColumnNameTest extends CsvBaseTest
+class CsvColumnNameValidator extends CsvBaseValidator
 {
     const TITLE = 'Column Name Validation';
     // Do not reset in between multiple CSVs.

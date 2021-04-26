@@ -1,0 +1,157 @@
+<?php
+
+use org\bovigo\vfs\vfsStream;
+
+/**
+ * @internal
+ * @covers \csvLanguageTest
+ */
+class CsvLanguageTest extends \PHPUnit\Framework\TestCase
+{
+    protected $vdbcon;
+    protected $context;
+
+    public function setUp(): void
+    {
+        $this->context = sfContext::getInstance();
+        $this->vdbcon = $this->createMock(DebugPDO::class);
+
+        $this->csvHeader = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture';
+        $this->csvHeaderWithLanguage = 'legacyId,parentId,identifier,title,levelOfDescription,extentAndMedium,repository,culture,language';
+
+        $this->csvData = [
+            // Note: leading and trailing whitespace in first row is intentional
+            '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","",""',
+            '"","","","Chemise","","","","fr"',
+            '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""',
+            '"", "DJ003", "ID4", "Title Four", "","", "", "en"',
+        ];
+
+        $this->csvDataValidLanguages = [
+            '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ", "es"',
+            '"","","","Chemise","","","","fr","fr"',
+            '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de","en "',
+            '"", "DJ003", "ID4", "Title Four", "","", "", "en"," en"',
+        ];
+
+        $this->csvDataLanguagesSomeInvalid = [
+            '"B10101 "," DJ001","ID1 ","Some Photographs","","Extent and medium 1","","es ", "Spanish"',
+            '"","","","Chemise","","","","fr","fr|en"',
+            '"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", "de","en_GB"',
+            '"", "DJ003", "ID4", "Title Four", "","", "", "en"," en_gb"',
+        ];
+
+        // define virtual file system
+        $directory = [
+            'unix_csv_without_utf8_bom.csv' => $this->csvHeader."\n".implode("\n", $this->csvData),
+            'unix_csv_valid_languages.csv' => $this->csvHeaderWithLanguage."\n".implode("\n", $this->csvDataValidLanguages),
+            'unix_csv_languages_some_invalid.csv' => $this->csvHeaderWithLanguage."\n".implode("\n", $this->csvDataLanguagesSomeInvalid),
+        ];
+
+        $this->vfs = vfsStream::setup('root', null, $directory);
+
+        $this->ormClasses = [
+            'QubitFlatfileImport' => \AccessToMemory\test\mock\QubitFlatfileImport::class,
+            'QubitObject' => \AccessToMemory\test\mock\QubitObject::class,
+        ];
+    }
+
+    /**
+     * @dataProvider csvValidatorTestProvider
+     *
+     * Generic test - options and expected results from csvValidatorTestProvider()
+     *
+     * @param mixed $options
+     */
+    public function testCsvValidator($options)
+    {
+        $filename = $this->vfs->url().$options['filename'];
+        $validatorOptions = isset($options['validatorOptions']) ? $options['validatorOptions'] : null;
+
+        $csvValidator = new CsvImportValidator($this->context, null, $validatorOptions);
+        $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
+        $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
+
+        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
+        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
+        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
+        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+    }
+
+    public function csvValidatorTestProvider()
+    {
+        $vfsUrl = 'vfs://root';
+
+        return [
+            /*
+             * Test CsvLanguageValidator.class.php
+             *
+             * Tests:
+             * - language column missing
+             * - language column present with valid data
+             * - language column present with mix of valid and invalid data
+             */
+            [
+                'CsvLanguageValidator-LanguageColMissing' => [
+                    'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
+                    'filename' => '/unix_csv_without_utf8_bom.csv',
+                    'testname' => 'CsvLanguageValidator',
+                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_INFO,
+                    CsvBaseValidator::TEST_RESULTS => [
+                        '\'language\' column not present in file.',
+                    ],
+                    CsvBaseValidator::TEST_DETAIL => [
+                    ],
+                ],
+            ],
+
+            [
+                'CsvLanguageValidator-LanguageValid' => [
+                    'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
+                    'filename' => '/unix_csv_valid_languages.csv',
+                    'testname' => 'CsvLanguageValidator',
+                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_INFO,
+                    CsvBaseValidator::TEST_RESULTS => [
+                        '\'language\' column values are all valid.',
+                    ],
+                    CsvBaseValidator::TEST_DETAIL => [
+                    ],
+                ],
+            ],
+
+            [
+                'CsvLanguageValidator-LanguagesSomeInvalid' => [
+                    'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
+                    'filename' => '/unix_csv_languages_some_invalid.csv',
+                    'testname' => 'CsvLanguageValidator',
+                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_ERROR,
+                    CsvBaseValidator::TEST_RESULTS => [
+                        'Rows with invalid language values: 2',
+                        'Rows with pipe character in language values: 1',
+                        '\'language\' column does not allow for multiple values separated with a pipe \'|\' character.',
+                        'Invalid language values: Spanish, fr|en, en_gb',
+                    ],
+                    CsvBaseValidator::TEST_DETAIL => [
+                        'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,es,Spanish',
+                        ',,,Chemise,,,,fr,fr|en',
+                        ',DJ003,ID4,Title Four,,,,en,en_gb',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    // Generic Validation
+    protected function runValidator($csvValidator, $filenames, $tests, $verbose = true)
+    {
+        $csvValidator->setCsvTests($tests);
+        $csvValidator->setFilenames(explode(',', $filenames));
+        $csvValidator->setVerbose($verbose);
+        $csvValidator->setOrmClasses($this->ormClasses);
+
+        return $csvValidator->validate();
+    }
+}

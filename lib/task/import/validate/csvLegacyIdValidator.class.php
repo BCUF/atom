@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvLegacyIdTest extends CsvBaseTest
+class CsvLegacyIdValidator extends CsvBaseValidator
 {
     const TITLE = 'LegacyId check';
     // Persist across multiple CSVs.

@@ -30,7 +30,7 @@
  * @internal
  * @coversNothing
  */
-class CsvDigitalObjectUriTest extends CsvBaseTest
+class CsvDigitalObjectUriValidator extends CsvBaseValidator
 {
     const TITLE = 'Digital Object URI Test';
 

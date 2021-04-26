@@ -171,13 +171,13 @@ EOF;
     protected function formatStatus(int $status)
     {
         switch ($status) {
-            case csvBaseTest::RESULT_INFO:
+            case csvBaseValidator::RESULT_INFO:
                 return 'info';
 
-              case csvBaseTest::RESULT_WARN:
+              case csvBaseValidator::RESULT_WARN:
                 return 'Warning';
 
-            case csvBaseTest::RESULT_ERROR:
+            case csvBaseValidator::RESULT_ERROR:
                 return 'ERROR';
         }
     }

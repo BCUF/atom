@@ -28,7 +28,7 @@
  * @internal
  * @coversNothing
  */
-class CsvDigitalObjectPathTest extends CsvBaseTest
+class CsvDigitalObjectPathValidator extends CsvBaseValidator
 {
     const TITLE = 'Digital Object Path Test';
 

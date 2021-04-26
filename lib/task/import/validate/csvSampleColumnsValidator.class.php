@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvSampleValuesTest extends CsvBaseTest
+class CsvSampleValuesValidator extends CsvBaseValidator
 {
     const TITLE = 'Sample Values';
     protected $values = [];

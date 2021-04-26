@@ -72,24 +72,24 @@ class CsvImportValidator
 
     // General tests which can apply to any CSV.
     protected $generalTestList = [
-        'CsvSampleValuesTest' => CsvSampleValuesTest::class,
-        'CsvFileEncodingTest' => CsvFileEncodingTest::class,
-        'CsvColumnNameTest' => CsvColumnNameTest::class,
-        'CsvColumnCountTest' => CsvColumnCountTest::class,
-        'CsvDuplicateColumnNameTest' => CsvDuplicateColumnNameTest::class,
-        'CsvEmptyRowTest' => CsvEmptyRowTest::class,
-        'CsvCultureTest' => CsvCultureTest::class,
-        'CsvLanguageTest' => CsvLanguageTest::class,
-        'CsvFieldLengthTest' => CsvFieldLengthTest::class,
+        'CsvSampleValuesValidator' => CsvSampleValuesValidator::class,
+        'CsvFileEncodingValidator' => CsvFileEncodingValidator::class,
+        'CsvColumnNameValidator' => CsvColumnNameValidator::class,
+        'CsvColumnCountValidator' => CsvColumnCountValidator::class,
+        'CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class,
+        'CsvEmptyRowValidator' => CsvEmptyRowValidator::class,
+        'CsvCultureValidator' => CsvCultureValidator::class,
+        'CsvLanguageValidator' => CsvLanguageValidator::class,
+        'CsvFieldLengthValidator' => CsvFieldLengthValidator::class,
     ];
 
     // Tests which pertain only to this class type.
     protected $qubitInformationObjectTestList = [
-        'CsvParentTest' => CsvParentTest::class,
-        'CsvLegacyIdTest' => CsvLegacyIdTest::class,
-        'CsvEventValuesTest' => CsvEventValuesTest::class,
-        'CsvDigitalObjectPathTest' => CsvDigitalObjectPathTest::class,
-        'CsvDigitalObjectUriTest' => CsvDigitalObjectUriTest::class,
+        'CsvParentValidator' => CsvParentValidator::class,
+        'CsvLegacyIdValidator' => CsvLegacyIdValidator::class,
+        'CsvEventValuesValidator' => CsvEventValuesValidator::class,
+        'CsvDigitalObjectPathValidator' => CsvDigitalObjectPathValidator::class,
+        'CsvDigitalObjectUriValidator' => CsvDigitalObjectUriValidator::class,
     ];
 
     public function __construct(sfContext $context = null,

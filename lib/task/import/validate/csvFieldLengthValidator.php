@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvFieldLengthTest extends CsvBaseTest
+class CsvFieldLengthValidator extends CsvBaseValidator
 {
     const TITLE = 'Field Length Check';
     // Add fields to check legth of here with max len. Anything larger than this value will

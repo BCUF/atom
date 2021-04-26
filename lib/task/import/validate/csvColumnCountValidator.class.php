@@ -25,7 +25,7 @@
  * @internal
  * @coversNothing
  */
-class CsvColumnCountTest extends CsvBaseTest
+class CsvColumnCountValidator extends CsvBaseValidator
 {
     const TITLE = 'CSV Column Count Check';
     protected $headerCount;

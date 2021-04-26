@@ -26,7 +26,7 @@
  * @internal
  * @coversNothing
  */
-class CsvParentTest extends CsvBaseTest
+class CsvParentValidator extends CsvBaseValidator
 {
     const TITLE = 'Parent check';
     // Persist across multiple CSVs.

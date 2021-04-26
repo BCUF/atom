@@ -25,7 +25,7 @@
  * @internal
  * @coversNothing
  */
-class CsvFileEncodingTest extends CsvBaseTest
+class CsvFileEncodingValidator extends CsvBaseValidator
 {
     const TITLE = 'UTF-8 File Encoding Check';
     protected $utf8BomPresent;
