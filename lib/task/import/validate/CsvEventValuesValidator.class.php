@@ -95,22 +95,21 @@ class CsvEventValuesValidator extends CsvBaseValidator
         if (!empty($fieldCounts) && 1 != count(array_unique($fieldCounts))) {
             ++$this->countMismatchedRows;
 
-            $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+            $this->testData->addDetail(implode(',', $row));
         }
     }
 
     public function getTestResult()
     {
         if (empty($this->columnsFound)) {
-            $this->addTestResult(self::TEST_RESULTS, 'No event columns to check.');
+            $this->testData->addResult('No event columns to check.');
         } else {
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Checking columns: %s', implode(',', $this->columnsFound)));
+            $this->testData->addResult(sprintf('Checking columns: %s', implode(',', $this->columnsFound)));
         }
 
         if (0 < $this->countMismatchedRows) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Event value mismatches found: %s', $this->countMismatchedRows));
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf('Event value mismatches found: %s', $this->countMismatchedRows));
         }
 
         return parent::getTestResult();

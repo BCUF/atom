@@ -66,14 +66,14 @@ class CsvDuplicateColumnNameValidator extends CsvBaseValidator
     {
         foreach ($this->columnFrequency as $columnName => $count) {
             if (1 < $count) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Columns with name '%s': %s", $columnName, $count));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf("Columns with name '%s': %s", $columnName, $count));
             }
         }
         // No duplicate header values when array_unique has only one element, and last element's value === 1.
         if (1 === count(array_unique($this->columnFrequency)) && 1 === end($this->columnFrequency)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, 'No duplicate column names found.');
+            $this->testData->setStatusInfo();
+            $this->testData->addResult('No duplicate column names found.');
         }
 
         return parent::getTestResult();

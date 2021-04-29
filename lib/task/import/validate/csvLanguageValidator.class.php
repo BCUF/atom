@@ -72,7 +72,7 @@ class CsvLanguageValidator extends CsvBaseValidator
                 // Check if contains pipe.
                 if (0 < strpos($row['language'], '|')) {
                     ++$this->rowsWithPipeFoundInLanguage;
-                    $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                    $this->testData->addDetail(implode(',', $row));
 
                     // Keep a list of invalid language values.
                     if (!in_array($row['language'], $this->invalidLanguages)) {
@@ -82,7 +82,7 @@ class CsvLanguageValidator extends CsvBaseValidator
                 // Validate language value against AtoM.
                 elseif (!$this->isLanguageValid($row['language'])) {
                     ++$this->rowsWithInvalidLanguage;
-                    $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                    $this->testData->addDetail(implode(',', $row));
 
                     // Keep a list of invalid language values.
                     if (!in_array($row['language'], $this->invalidLanguages)) {
@@ -95,32 +95,32 @@ class CsvLanguageValidator extends CsvBaseValidator
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        $this->testData->setStatusInfo();
 
         if (false == $this->languageColumnPresent) {
             // language column not present in file.
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("'language' column not present in file."));
+            $this->testData->setStatusInfo();
+            $this->testData->addResult(sprintf("'language' column not present in file."));
         } else {
             // Rows exist with invalid language.
             if (0 < $this->rowsWithInvalidLanguage) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with invalid language values: %s', $this->rowsWithInvalidLanguage));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf('Rows with invalid language values: %s', $this->rowsWithInvalidLanguage));
             }
 
             // Rows exist with language containing pipe '|'
             if (0 < $this->rowsWithPipeFoundInLanguage) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with pipe character in language values: %s', $this->rowsWithPipeFoundInLanguage));
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'language' column does not allow for multiple values separated with a pipe '|' character."));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf('Rows with pipe character in language values: %s', $this->rowsWithPipeFoundInLanguage));
+                $this->testData->addResult(sprintf("'language' column does not allow for multiple values separated with a pipe '|' character."));
             }
 
             if (0 < $this->rowsWithInvalidLanguage || 0 < $this->rowsWithPipeFoundInLanguage) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Invalid language values: %s', implode(', ', $this->invalidLanguages)));
+                $this->testData->addResult(sprintf('Invalid language values: %s', implode(', ', $this->invalidLanguages)));
             }
 
             if (0 == $this->rowsWithInvalidLanguage && 0 == $this->rowsWithPipeFoundInLanguage) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'language' column values are all valid."));
+                $this->testData->addResult(sprintf("'language' column values are all valid."));
             }
         }
 

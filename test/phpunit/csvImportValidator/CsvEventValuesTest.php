@@ -81,10 +81,10 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -106,12 +106,12 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvEventValuesValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvEventValuesValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvEventValuesValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'No event columns to check.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -121,12 +121,12 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type.csv',
                     'testname' => 'CsvEventValuesValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvEventValuesValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvEventValuesValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -136,13 +136,13 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type_mismatches.csv',
                     'testname' => 'CsvEventValuesValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvEventValuesValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvEventValuesValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates',
                         'Event value mismatches found: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         ',,,Chemise,,,creation|donation,2010,01-01-2010,,,fr',
                     ],
                 ],
@@ -153,12 +153,12 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type_all_cols.csv',
                     'testname' => 'CsvEventValuesValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvEventValuesValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvEventValuesValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: eventTypes,eventDates,eventStartDates,eventEndDates,eventActors,eventActorHistories,eventPlaces',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],

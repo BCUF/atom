@@ -82,10 +82,10 @@ class CsvCultureTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -106,13 +106,13 @@ class CsvCultureTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvCultureValidator' => CsvCultureValidator::class],
                     'filename' => '/unix_csv_missing_culture.csv',
                     'testname' => 'CsvCultureValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvCultureValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvCultureValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvCultureValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'culture\' column not present in file.',
                         'Rows without a valid culture value will be imported using AtoM\'s default source culture.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -122,12 +122,12 @@ class CsvCultureTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvCultureValidator' => CsvCultureValidator::class],
                     'filename' => '/unix_csv_valid_cultures.csv',
                     'testname' => 'CsvCultureValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvCultureValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvCultureValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvCultureValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'culture\' column values are all valid.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -137,9 +137,9 @@ class CsvCultureTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvCultureValidator' => CsvCultureValidator::class],
                     'filename' => '/unix_csv_cultures_some_invalid.csv',
                     'testname' => 'CsvCultureValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvCultureValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvCultureValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvCultureValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with blank culture value: 1',
                         'Rows with invalid culture values: 1',
                         'Rows with pipe character in culture values: 1',
@@ -147,7 +147,7 @@ class CsvCultureTest extends \PHPUnit\Framework\TestCase
                         'Invalid culture values: fr|en, gg',
                         'Rows with a blank culture value will be imported using AtoM\'s default source culture.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         ',,,Chemise,,,,fr|en',
                         'D20202,DJ002,,Voûte, étagère 0074,,,,gg',
                     ],

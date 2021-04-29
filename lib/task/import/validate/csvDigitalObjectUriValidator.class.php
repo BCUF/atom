@@ -72,34 +72,34 @@ class CsvDigitalObjectUriValidator extends CsvBaseValidator
     public function getTestResult()
     {
         if (false == $this->digitalObjectUriColumnPresent) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectUri' not present in CSV. Nothing to verify."));
+            $this->testData->setStatusInfo();
+            $this->testData->addResult(sprintf("Column 'digitalObjectUri' not present in CSV. Nothing to verify."));
         } else {
-            $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectUri' found."));
+            $this->testData->addResult(sprintf("Column 'digitalObjectUri' found."));
 
             if (empty($this->digitalObjectUses)) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectUri' is empty."));
+                $this->testData->setStatusInfo();
+                $this->testData->addResult(sprintf("Column 'digitalObjectUri' is empty."));
             } else {
                 $digitalObjectUrisUsedMoreThanOnce = $this->getUsedMoreThanOnce();
 
                 if (!empty($digitalObjectUrisUsedMoreThanOnce)) {
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                    $this->addTestResult(self::TEST_RESULTS, sprintf('Repeating Digital object URIs found in CSV.'));
+                    $this->testData->setStatusWarn();
+                    $this->testData->addResult(sprintf('Repeating Digital object URIs found in CSV.'));
 
                     foreach ($digitalObjectUrisUsedMoreThanOnce as $uri) {
-                        $this->addTestResult(self::TEST_DETAIL, sprintf("Number of duplicates for URI '%s': %s", $uri, $this->digitalObjectUses[$uri]));
+                        $this->testData->addDetail(sprintf("Number of duplicates for URI '%s': %s", $uri, $this->digitalObjectUses[$uri]));
                     }
                 }
 
                 $invalidUris = $this->getInvalidUris();
 
                 if (!empty($invalidUris)) {
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                    $this->addTestResult(self::TEST_RESULTS, sprintf('Invalid digitalObjectUri values detected: %s', count($invalidUris)));
+                    $this->testData->setStatusError();
+                    $this->testData->addResult(sprintf('Invalid digitalObjectUri values detected: %s', count($invalidUris)));
 
                     foreach ($invalidUris as $file) {
-                        $this->addTestResult(self::TEST_DETAIL, sprintf('Invalid URI: %s', $file));
+                        $this->testData->addDetail(sprintf('Invalid URI: %s', $file));
                     }
                 }
             }

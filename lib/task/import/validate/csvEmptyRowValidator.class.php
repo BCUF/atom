@@ -67,17 +67,17 @@ class CsvEmptyRowValidator extends CsvBaseValidator
     public function getTestResult()
     {
         if ($this->headerIsBlank) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV Header is blank.'));
+            $this->testData->setStatusError();
+            $this->testData->addResult(sprintf('CSV Header is blank.'));
         }
 
         if (0 < count($this->blankRowSummary)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV blank row count: %s', count($this->blankRowSummary)));
-            $this->addTestResult(self::TEST_DETAIL, sprintf('Blank row numbers: %s', implode(', ', $this->blankRowSummary)));
+            $this->testData->setStatusError();
+            $this->testData->addResult(sprintf('CSV blank row count: %s', count($this->blankRowSummary)));
+            $this->testData->addDetail(sprintf('Blank row numbers: %s', implode(', ', $this->blankRowSummary)));
         } else {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('CSV does not have any blank rows.'));
+            $this->testData->setStatusInfo();
+            $this->testData->addResult(sprintf('CSV does not have any blank rows.'));
         }
 
         return parent::getTestResult();

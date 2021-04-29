@@ -18,25 +18,20 @@
  */
 
 /**
- * CSV validation test base class.
+ * CSV validation test base class. All test classes in lib/task/import/validate
+ * extends this class. Each test class should override:
+ * 1) __construct() - set title and any other test initialization
+ * 2) testRow() - Called once per row in the CSV. Test row and record results here.
+ * 3) reset() - Reset variables as needed before processing next CSV file.
+ * 4) getTestResults() - finalize test results and set details in $testData (CsvValidatorResult).
+ *
+ * See class CsvSampleValuesValidator for an example.
  *
  * @author     Steve Breker <sbreker@artefactual.com>
  */
 abstract class CsvBaseValidator
 {
-    // Integer type to allow comparison of severity values.
-    const RESULT_INFO = 0;
-    const RESULT_WARN = 1;
-    const RESULT_ERROR = 2;
-
-    const TEST_TITLE = 'title';
-    const TEST_STATUS = 'status';
-    const TEST_RESULTS = 'results';
-    const TEST_DETAIL = 'details';
-
     const HEADER_PLACEHOLDER = 'EXTRA_COLUMN';
-
-    protected $testData = [];
 
     protected $filename = '';
     protected $columnCount = 0;
@@ -44,12 +39,15 @@ abstract class CsvBaseValidator
     protected $title = '';
     protected $options = [];
     protected $ormClasses = [];
+    protected $testData;
 
     public function __construct(array $options = null)
     {
         if (isset($options)) {
             $this->setOptions($options);
         }
+
+        $this->testData = new CsvValidatorResult($this->title);
     }
 
     public function testRow(array $header, array $row)
@@ -59,12 +57,7 @@ abstract class CsvBaseValidator
 
     public function reset()
     {
-        $this->testData = [
-            self::TEST_TITLE => $this->title,
-            self::TEST_STATUS => self::RESULT_INFO,
-            self::TEST_RESULTS => [],
-            self::TEST_DETAIL => [],
-        ];
+        $this->testData = new CsvValidatorResult($this->title);
     }
 
     public function setOrmClasses(array $classes)
@@ -90,10 +83,6 @@ abstract class CsvBaseValidator
     public function setTitle(string $title)
     {
         $this->title = $title;
-
-        if (isset($this->testData[self::TEST_TITLE])) {
-            $this->testData[self::TEST_TITLE] = $title;
-        }
     }
 
     public function getTitle(): string
@@ -113,31 +102,7 @@ abstract class CsvBaseValidator
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-
         return $this->testData;
-    }
-
-    protected function addTestResult(string $datatype, string $value)
-    {
-        switch ($datatype) {
-            case self::TEST_STATUS:
-                // Only update when severity increases.
-                if ($value > $this->testData[$datatype]) {
-                    $this->testData[$datatype] = intval($value);
-                }
-
-                break;
-
-            case self::TEST_RESULTS:
-            case self::TEST_DETAIL:
-                $this->testData[$datatype][] = $value;
-
-                break;
-
-            default:
-                throw new sfException('Unknown test result datatype in csvBaseValidator.');
-        }
     }
 
     protected function combineRow(array $header, array $row)

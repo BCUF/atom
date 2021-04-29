@@ -91,70 +91,70 @@ class CsvDigitalObjectPathValidator extends CsvBaseValidator
     public function getTestResult()
     {
         if (false === $this->digitalObjectPathColumnPresent) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectPath' not present in CSV. Nothing to verify."));
+            $this->testData->setStatusInfo();
+            $this->testData->addResult(sprintf("Column 'digitalObjectPath' not present in CSV. Nothing to verify."));
         } else {
-            $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectPath' found."));
+            $this->testData->addResult(sprintf("Column 'digitalObjectPath' found."));
 
             // Digital object folder option not passed/is invalid.
             if (empty($this->pathToDigitalObjects)) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+                $this->testData->setStatusInfo();
 
                 // Option was not supplied.
                 if (empty($this->options['pathToDigitalObjects'])) {
-                    $this->addTestResult(self::TEST_RESULTS, sprintf('Digital object folder location not specified.'));
+                    $this->testData->addResult(sprintf('Digital object folder location not specified.'));
                 }
                 // Path could not be found.
                 else {
-                    $this->addTestResult(self::TEST_RESULTS, sprintf('Unable to open digital object folder path: %s', $this->options['pathToDigitalObjects']));
+                    $this->testData->addResult(sprintf('Unable to open digital object folder path: %s', $this->options['pathToDigitalObjects']));
                 }
                 // If digitalObjectPath column is populated in CSV, this is an error.
                 if (0 < count($this->digitalObjectUses)) {
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                    $this->addTestResult(self::TEST_RESULTS, sprintf('Unable to locate files specified in digitalObjectPath column of CSV.'));
+                    $this->testData->setStatusError();
+                    $this->testData->addResult(sprintf('Unable to locate files specified in digitalObjectPath column of CSV.'));
                 }
             } else {
                 if (empty($this->digitalObjectUses)) {
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-                    $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'digitalObjectPath' is empty."));
+                    $this->testData->setStatusInfo();
+                    $this->testData->addResult(sprintf("Column 'digitalObjectPath' is empty."));
                 } else {
                     // Check for Paths that will be overridden by URI.
                     if (0 < $this->overriddenByUriCount) {
-                        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                        $this->addTestResult(self::TEST_RESULTS, sprintf("'digitalObjectPath' will be overridden by 'digitalObjectUri' if both are populated."));
-                        $this->addTestResult(self::TEST_RESULTS, sprintf("'digitalObjectPath' values that will be overridden by digitalObjectUri: %s", $this->overriddenByUriCount));
+                        $this->testData->setStatusWarn();
+                        $this->testData->addResult(sprintf("'digitalObjectPath' will be overridden by 'digitalObjectUri' if both are populated."));
+                        $this->testData->addResult(sprintf("'digitalObjectPath' values that will be overridden by digitalObjectUri: %s", $this->overriddenByUriCount));
                     }
 
                     $digitalObjectPathsUsedMoreThanOnce = $this->getUsedMoreThanOnce();
 
                     if (!empty($digitalObjectPathsUsedMoreThanOnce)) {
-                        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                        $this->addTestResult(self::TEST_RESULTS, sprintf('Number of duplicated digital object paths found in CSV: %s', count($digitalObjectPathsUsedMoreThanOnce)));
+                        $this->testData->setStatusWarn();
+                        $this->testData->addResult(sprintf('Number of duplicated digital object paths found in CSV: %s', count($digitalObjectPathsUsedMoreThanOnce)));
 
                         foreach ($digitalObjectPathsUsedMoreThanOnce as $path) {
-                            $this->addTestResult(self::TEST_DETAIL, sprintf("Number of duplicates for path '%s': %s", $path, $this->digitalObjectUses[$path]));
+                            $this->testData->addDetail(sprintf("Number of duplicates for path '%s': %s", $path, $this->digitalObjectUses[$path]));
                         }
                     }
 
                     $unusedFiles = $this->getUnusedFiles();
 
                     if (!empty($unusedFiles)) {
-                        $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                        $this->addTestResult(self::TEST_RESULTS, sprintf('Digital objects in folder not referenced by CSV: %s', count($unusedFiles)));
+                        $this->testData->setStatusWarn();
+                        $this->testData->addResult(sprintf('Digital objects in folder not referenced by CSV: %s', count($unusedFiles)));
 
                         foreach ($unusedFiles as $file) {
-                            $this->addTestResult(self::TEST_DETAIL, sprintf('Unreferenced digital object: %s', $file));
+                            $this->testData->addDetail(sprintf('Unreferenced digital object: %s', $file));
                         }
                     }
 
                     $missingFiles = $this->getMissingDigitalObjects();
 
                     if (!empty($missingFiles)) {
-                        $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                        $this->addTestResult(self::TEST_RESULTS, sprintf('Digital object referenced by CSV not found in folder: %s', count($missingFiles)));
+                        $this->testData->setStatusError();
+                        $this->testData->addResult(sprintf('Digital object referenced by CSV not found in folder: %s', count($missingFiles)));
 
                         foreach ($missingFiles as $file) {
-                            $this->addTestResult(self::TEST_DETAIL, sprintf('Unable to locate digital object: %s/%s', $this->pathToDigitalObjects, $file));
+                            $this->testData->addDetail(sprintf('Unable to locate digital object: %s/%s', $this->pathToDigitalObjects, $file));
                         }
                     }
                 }

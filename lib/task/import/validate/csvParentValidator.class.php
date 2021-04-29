@@ -95,7 +95,7 @@ class CsvParentValidator extends CsvBaseValidator
                 ++$this->unmatchedCount;
 
                 // Add row that triggered this to the output.
-                $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                $this->testData->addDetail(implode(',', $row));
             }
         } elseif ($this->parentIdColumnPresent && !empty($row['parentId'])) {
             ++$this->rowsWithParentId;
@@ -105,7 +105,7 @@ class CsvParentValidator extends CsvBaseValidator
                 ++$this->unmatchedCount;
 
                 // Add row that triggered this to the output.
-                $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                $this->testData->addDetail(implode(',', $row));
             }
         }
 
@@ -127,41 +127,41 @@ class CsvParentValidator extends CsvBaseValidator
     public function getTestResult()
     {
         if (false == $this->parentIdColumnPresent && false == $this->qubitParentSlugColumnPresent) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("'parentId' and 'qubitParentSlugColumnPresent' columns not present. CSV contents will be imported as top level records."));
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf("'parentId' and 'qubitParentSlugColumnPresent' columns not present. CSV contents will be imported as top level records."));
         } else {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+            $this->testData->setStatusInfo();
 
             if ($this->parentIdColumnPresent) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with parentId populated: %s', $this->rowsWithParentId));
+                $this->testData->addResult(sprintf('Rows with parentId populated: %s', $this->rowsWithParentId));
             }
             if ($this->qubitParentSlugColumnPresent) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with qubitParentSlug populated: %s', $this->rowsWithQubitParentSlug));
+                $this->testData->addResult(sprintf('Rows with qubitParentSlug populated: %s', $this->rowsWithQubitParentSlug));
             }
 
             // Rows exist with both parentId and qubitParentSlug populated. Warn that qubitParentSlug will override.
             if (0 < $this->rowsWithParentIdQubitParentSlug) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with both 'parentId' and 'qubitParentSlug' populated: %s", $this->rowsWithParentIdQubitParentSlug));
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Column 'qubitParentSlug' will override 'parentId' if both are populated."));
+                $this->testData->setStatusWarn();
+                $this->testData->addResult(sprintf("Rows with both 'parentId' and 'qubitParentSlug' populated: %s", $this->rowsWithParentIdQubitParentSlug));
+                $this->testData->addResult(sprintf("Column 'qubitParentSlug' will override 'parentId' if both are populated."));
             }
 
             // If parentId is present, then it would be an error if legacyId was not present.
             if (false == $this->legacyIdColumnPresent && 0 < $this->rowsWithParentId) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'legacyId' column not found. Unable to match parentId to CSV rows."));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf("'legacyId' column not found. Unable to match parentId to CSV rows."));
             }
 
             // If unable to find a parentId in the DB, and source was not specified, display a message as this is a possible cause.
             if (empty($this->options['source']) && $this->parentIdColumnPresent && $this->orphanRowsFound) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'source' option not specified. Unable to check parentId values against AtoM's database."));
+                $this->testData->setStatusWarn();
+                $this->testData->addResult(sprintf("'source' option not specified. Unable to check parentId values against AtoM's database."));
             }
         }
 
         if ($this->orphanRowsFound) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Number of rows for which parents could not be found (will import as top level records): %s', $this->unmatchedCount));
+            $this->testData->setStatusError();
+            $this->testData->addResult(sprintf('Number of rows for which parents could not be found (will import as top level records): %s', $this->unmatchedCount));
         }
 
         return parent::getTestResult();

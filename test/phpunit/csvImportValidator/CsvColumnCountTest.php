@@ -92,10 +92,10 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -123,12 +123,12 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of columns in CSV: 8',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -138,13 +138,13 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvColumnCountValidator',
                     'validatorOptions' => ['separator' => 'j'],
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of columns in CSV: 1',
                         'CSV appears to have only one column - check CSV separator option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -153,14 +153,14 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_header.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 7 columns: 1',
                         'Number of rows with 8 columns: 4',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -169,14 +169,14 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_header.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 9 columns: 1',
                         'Number of rows with 8 columns: 4',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -185,14 +185,14 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_row.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 8 columns: 4',
                         'Number of rows with 7 columns: 1',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -201,14 +201,14 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_row.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 8 columns: 4',
                         'Number of rows with 9 columns: 1',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -217,15 +217,15 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_rows.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 8 columns: 3',
                         'Number of rows with 7 columns: 1',
                         'Number of rows with 6 columns: 1',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -234,15 +234,15 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_rows.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvColumnCountValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnCountValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of rows with 8 columns: 3',
                         'Number of rows with 11 columns: 1',
                         'Number of rows with 9 columns: 1',
                         'CSV rows with different lengths detected - check CSV enclosure option matches file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
         ];

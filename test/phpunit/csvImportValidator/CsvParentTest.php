@@ -126,10 +126,10 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -161,12 +161,12 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_missing_parent_id.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "'parentId' and 'qubitParentSlugColumnPresent' columns not present. CSV contents will be imported as top level records.",
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -176,15 +176,15 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_missing_legacy_id.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 3',
                         '\'legacyId\' column not found. Unable to match parentId to CSV rows.',
                         "'source' option not specified. Unable to check parentId values against AtoM's database.",
                         'Number of rows for which parents could not be found (will import as top level records): 3',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'DJ001,ID1,Some Photographs,,Extent and medium 1,,',
                         'DJ002,,Voûte, étagère 0074,,,,',
                         'DJ003,ID4,Title Four,,,,en',
@@ -197,12 +197,12 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_parent_id_column_empty.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 0',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -212,14 +212,14 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 3',
                         "'source' option not specified. Unable to check parentId values against AtoM's database.",
                         'Number of rows for which parents could not be found (will import as top level records): 3',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,',
                         'D20202,DJ002,,Voûte, étagère 0074,,,,',
                         ',DJ003,ID4,Title Four,,,,en',
@@ -232,12 +232,12 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_parent_id_matches.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -248,12 +248,12 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'filename' => '/unix_csv_parent_id_matches.csv',
                     'testname' => 'CsvParentValidator',
                     'validatorOptions' => ['source' => 'testsourcefile.csv'],
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -263,14 +263,14 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_parent_id_matches_in_keymap.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 1',
                         "'source' option not specified. Unable to check parentId values against AtoM's database.",
                         'Number of rows for which parents could not be found (will import as top level records): 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'D20202,A10101,,Voûte, étagère 0074,,,,',
                     ],
                 ],
@@ -282,12 +282,12 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'filename' => '/unix_csv_parent_id_matches_in_keymap.csv',
                     'testname' => 'CsvParentValidator',
                     'validatorOptions' => ['source' => 'testsourcefile.csv'],
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -297,13 +297,13 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_qubit_parent_slug.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with qubitParentSlug populated: 2',
                         'Number of rows for which parents could not be found (will import as top level records): 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'X7,missing-slug,TY99,Some stuff,,,,en',
                     ],
                 ],
@@ -314,15 +314,15 @@ class CsvParentTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvParentValidator' => CsvParentValidator::class],
                     'filename' => '/unix_csv_parent_id_and_qubit_parent_slug.csv',
                     'testname' => 'CsvParentValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvParentValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvParentValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvParentValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with parentId populated: 1',
                         'Rows with qubitParentSlug populated: 2',
                         'Rows with both \'parentId\' and \'qubitParentSlug\' populated: 1',
                         'Column \'qubitParentSlug\' will override \'parentId\' if both are populated.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],

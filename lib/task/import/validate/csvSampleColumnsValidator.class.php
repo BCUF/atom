@@ -33,10 +33,9 @@ class CsvSampleValuesValidator extends CsvBaseValidator
 
     public function __construct(array $options = null)
     {
-        parent::__construct($options);
-
         $this->setTitle(self::TITLE);
-        $this->reset();
+
+        parent::__construct($options);
     }
 
     public function reset()
@@ -61,10 +60,10 @@ class CsvSampleValuesValidator extends CsvBaseValidator
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        $this->testData->setStatusInfo();
 
         foreach ($this->values as $columnName => $sampleValue) {
-            $this->addTestResult(self::TEST_RESULTS, sprintf('%s:  %s', $columnName, $sampleValue));
+            $this->testData->addResult(sprintf('%s:  %s', $columnName, $sampleValue));
         }
 
         return parent::getTestResult();

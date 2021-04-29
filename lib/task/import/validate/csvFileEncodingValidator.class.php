@@ -62,7 +62,7 @@ class CsvFileEncodingValidator extends CsvBaseValidator
             $this->utf8Compatible = false;
 
             // Add row that triggered this to the output.
-            $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+            $this->testData->addDetail(implode(',', $row));
         }
     }
 
@@ -106,24 +106,24 @@ class CsvFileEncodingValidator extends CsvBaseValidator
     protected function finalizeTestResults()
     {
         if ($this->utf8Compatible) {
-            $this->addTestResult(self::TEST_RESULTS, 'File encoding is UTF-8 compatible.');
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+            $this->testData->addResult('File encoding is UTF-8 compatible.');
+            $this->testData->setStatusInfo();
         } else {
-            $this->addTestResult(self::TEST_RESULTS, 'File encoding does not appear to be UTF-8 compatible.');
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+            $this->testData->addResult('File encoding does not appear to be UTF-8 compatible.');
+            $this->testData->setStatusError();
         }
 
         if (null !== $this->utf8BomPresent && false !== $this->utf8BomPresent) {
             switch ($this->utf8BomPresent) {
                 case 'utf8Bom':
-                    $this->addTestResult(self::TEST_RESULTS, 'This file includes a UTF-8 BOM.');
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+                    $this->testData->addResult('This file includes a UTF-8 BOM.');
+                    $this->testData->setStatusInfo();
 
                     break;
 
                 default:
-                    $this->addTestResult(self::TEST_RESULTS, 'This file includes a unicode BOM, but it is not UTF-8.');
-                    $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+                    $this->testData->addResult('This file includes a unicode BOM, but it is not UTF-8.');
+                    $this->testData->setStatusError();
             }
         }
     }

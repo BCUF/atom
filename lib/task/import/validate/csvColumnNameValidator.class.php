@@ -89,28 +89,27 @@ class CsvColumnNameValidator extends CsvBaseValidator
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_RESULTS, sprintf('Number of unrecognized column names found in CSV: %s', count($this->unknownColumnNames)));
+        $this->testData->addResult(sprintf('Number of unrecognized column names found in CSV: %s', count($this->unknownColumnNames)));
 
         if (0 < count($this->unknownColumnNames)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, 'Unrecognized columns will be ignored by AtoM when the CSV is imported.');
+            $this->testData->setStatusWarn();
+            $this->testData->addResult('Unrecognized columns will be ignored by AtoM when the CSV is imported.');
             foreach ($this->unknownColumnNames as $unknownColumnName) {
-                $this->addTestResult(self::TEST_DETAIL, sprintf('Unrecognized column: %s', $unknownColumnName));
+                $this->testData->addDetail(sprintf('Unrecognized column: %s', $unknownColumnName));
             }
         }
 
         if (0 < count($this->trimIssuesColumnNames)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Number of column names with leading or trailing whitespace characters: %s', count($this->trimIssuesColumnNames)));
-            $this->addTestResult(self::TEST_DETAIL, sprintf('Column names with leading or trailing whitespace: %s', implode(',', $this->trimIssuesColumnNames)));
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf('Number of column names with leading or trailing whitespace characters: %s', count($this->trimIssuesColumnNames)));
+            $this->testData->addDetail(sprintf('Column names with leading or trailing whitespace: %s', implode(',', $this->trimIssuesColumnNames)));
         }
 
         if (0 < count($this->caseIssuesColumnNameMap)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Number of unrecognized columns that may be case related: %s', count($this->caseIssuesColumnNameMap)));
-
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf('Number of unrecognized columns that may be case related: %s', count($this->caseIssuesColumnNameMap)));
             foreach ($this->caseIssuesColumnNameMap as $key => $value) {
-                $this->addTestResult(self::TEST_DETAIL, sprintf('Possible match for %s: %s', $key, $value));
+                $this->testData->addDetail(sprintf('Possible match for %s: %s', $key, $value));
             }
         }
 

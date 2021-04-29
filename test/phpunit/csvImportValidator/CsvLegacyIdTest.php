@@ -73,10 +73,10 @@ class CsvLegacyIdTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -98,12 +98,12 @@ class CsvLegacyIdTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLegacyIdValidator' => CsvLegacyIdValidator::class],
                     'filename' => '/unix_csv_missing_legacy_id.csv',
                     'testname' => 'CsvLegacyIdValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLegacyIdValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLegacyIdValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLegacyIdValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'legacyId\' column not present. Future CSV updates may not match these records.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -113,14 +113,14 @@ class CsvLegacyIdTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLegacyIdValidator' => CsvLegacyIdValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvLegacyIdValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLegacyIdValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLegacyIdValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLegacyIdValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'legacyId\' values are all unique.',
                         'Rows with empty \'legacyId\' column: 2',
                         'Future CSV updates may not match these records.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         ',,,Chemise,,,,fr',
                         ',DJ003,ID4,Title Four,,,,en',
                     ],
@@ -132,14 +132,14 @@ class CsvLegacyIdTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLegacyIdValidator' => CsvLegacyIdValidator::class],
                     'filename' => '/unix_csv_with_duplicated_legacy_id.csv',
                     'testname' => 'CsvLegacyIdValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLegacyIdValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLegacyIdValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLegacyIdValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with non-unique \'legacyId\' values: 1',
                         'Rows with empty \'legacyId\' column: 1',
                         'Future CSV updates may not match these records.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         ',,,Chemise,,,,fr',
                         'Non-unique \'legacyId\' values: B10101',
                     ],

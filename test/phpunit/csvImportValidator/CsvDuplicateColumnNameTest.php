@@ -60,10 +60,10 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -84,12 +84,12 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDuplicateColumnNameValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'No duplicate column names found.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -99,12 +99,12 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_one_duplicated_header.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDuplicateColumnNameValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Columns with name \'repository\': 2',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -114,13 +114,13 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_duplicated_headers.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDuplicateColumnNameValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Columns with name \'culture\': 3',
                         'Columns with name \'repository\': 2',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],

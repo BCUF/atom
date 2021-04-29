@@ -81,10 +81,10 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -110,12 +110,12 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectPathValidator' => CsvDigitalObjectPathValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDigitalObjectPathValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectPathValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectPath' not present in CSV. Nothing to verify.",
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -125,13 +125,13 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectPathValidator' => CsvDigitalObjectPathValidator::class],
                     'filename' => '/unix_csv_with_digital_object_cols.csv',
                     'testname' => 'CsvDigitalObjectPathValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectPathValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectPath' found.",
                         'Digital object folder location not specified.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -147,13 +147,13 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectPathValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectPath' found.",
                         "Column 'digitalObjectPath' is empty.",
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -169,9 +169,9 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectPathValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectPath' found.",
                         "'digitalObjectPath' will be overridden by 'digitalObjectUri' if both are populated.",
                         "'digitalObjectPath' values that will be overridden by digitalObjectUri: 2",
@@ -179,7 +179,7 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'Digital objects in folder not referenced by CSV: 1',
                         'Digital object referenced by CSV not found in folder: 2',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         "Number of duplicates for path 'a.png': 2",
                         "Number of duplicates for path 'b.png': 2",
                         'Unreferenced digital object: c.png',
@@ -208,12 +208,12 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectUriValidator' => CsvDigitalObjectUriValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDigitalObjectUriValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectUriValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectUri' not present in CSV. Nothing to verify.",
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -223,13 +223,13 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectUriValidator' => CsvDigitalObjectUriValidator::class],
                     'filename' => '/unix_csv_with_digital_object_cols.csv',
                     'testname' => 'CsvDigitalObjectUriValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectUriValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectUri' found.",
                         "Column 'digitalObjectUri' is empty.",
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -245,14 +245,14 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvDigitalObjectUriValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         "Column 'digitalObjectUri' found.",
                         'Repeating Digital object URIs found in CSV.',
                         'Invalid digitalObjectUri values detected: 2',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         "Number of duplicates for URI 'https://www.artefactual.com/wp-content/uploads/2018/08/artefactual-logo-white.svg': 2",
                         'Invalid URI: www.google.com',
                         'Invalid URI: ftp://www.artefactual.com/wp-content/uploads/2018/08/artefactual-logo-white.svg',

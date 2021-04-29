@@ -72,7 +72,7 @@ class CsvCultureValidator extends CsvBaseValidator
                 // Check if contains pipe.
                 if (0 < strpos($row['culture'], '|')) {
                     ++$this->rowsWithPipeFoundInCulture;
-                    $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                    $this->testData->addDetail(implode(',', $row));
 
                     // Keep a list of invalid culture values.
                     if (!in_array($row['culture'], $this->invalidCultures)) {
@@ -82,7 +82,7 @@ class CsvCultureValidator extends CsvBaseValidator
                 // Validate culture value against AtoM.
                 elseif (!$this->isCultureValid($row['culture'])) {
                     ++$this->rowsWithInvalidCulture;
-                    $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                    $this->testData->addDetail(implode(',', $row));
 
                     // Keep a list of invalid culture values.
                     if (!in_array($row['culture'], $this->invalidCultures)) {
@@ -95,43 +95,43 @@ class CsvCultureValidator extends CsvBaseValidator
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        $this->testData->setStatusInfo();
 
         if (false == $this->cultureColumnPresent) {
             // culture column not present in file.
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("'culture' column not present in file."));
-            $this->addTestResult(self::TEST_RESULTS, sprintf("Rows without a valid culture value will be imported using AtoM's default source culture."));
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf("'culture' column not present in file."));
+            $this->testData->addResult(sprintf("Rows without a valid culture value will be imported using AtoM's default source culture."));
         } else {
             // Rows exist without culture populated.
             if (0 < $this->rowsWithBlankCulture) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with blank culture value: %s', $this->rowsWithBlankCulture));
+                $this->testData->setStatusWarn();
+                $this->testData->addResult(sprintf('Rows with blank culture value: %s', $this->rowsWithBlankCulture));
             }
 
             // Rows exist with invalid culture.
             if (0 < $this->rowsWithInvalidCulture) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with invalid culture values: %s', $this->rowsWithInvalidCulture));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf('Rows with invalid culture values: %s', $this->rowsWithInvalidCulture));
             }
 
             // Rows exist with culture containing pipe '|'
             if (0 < $this->rowsWithPipeFoundInCulture) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Rows with pipe character in culture values: %s', $this->rowsWithPipeFoundInCulture));
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'culture' column does not allow for multiple values separated with a pipe '|' character."));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf('Rows with pipe character in culture values: %s', $this->rowsWithPipeFoundInCulture));
+                $this->testData->addResult(sprintf("'culture' column does not allow for multiple values separated with a pipe '|' character."));
             }
 
             if (0 < $this->rowsWithInvalidCulture || 0 < $this->rowsWithPipeFoundInCulture) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Invalid culture values: %s', implode(', ', $this->invalidCultures)));
+                $this->testData->addResult(sprintf('Invalid culture values: %s', implode(', ', $this->invalidCultures)));
             }
 
             if (0 < $this->rowsWithBlankCulture || 0 < $this->rowsWithInvalidCulture) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with a blank culture value will be imported using AtoM's default source culture."));
+                $this->testData->addResult(sprintf("Rows with a blank culture value will be imported using AtoM's default source culture."));
             }
 
             if (0 == $this->rowsWithBlankCulture && 0 == $this->rowsWithInvalidCulture && 0 == $this->rowsWithPipeFoundInCulture) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'culture' column values are all valid."));
+                $this->testData->addResult(sprintf("'culture' column values are all valid."));
             }
         }
 

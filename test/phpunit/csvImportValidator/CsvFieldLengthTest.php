@@ -91,10 +91,10 @@ class CsvFieldLengthTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -116,12 +116,12 @@ class CsvFieldLengthTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFieldLengthValidator' => CsvFieldLengthValidator::class],
                     'filename' => '/unix_csv_missing_culture.csv',
                     'testname' => 'CsvFieldLengthValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFieldLengthValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFieldLengthValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFieldLengthValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'No columns to check.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -131,13 +131,13 @@ class CsvFieldLengthTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFieldLengthValidator' => CsvFieldLengthValidator::class],
                     'filename' => '/unix_csv_cultures_some_invalid.csv',
                     'testname' => 'CsvFieldLengthValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFieldLengthValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFieldLengthValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFieldLengthValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: culture',
                         '\'culture\' values that exceed 6 characters: 0',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -147,15 +147,15 @@ class CsvFieldLengthTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFieldLengthValidator' => CsvFieldLengthValidator::class],
                     'filename' => '/unix_csv_culture_language_length_error.csv',
                     'testname' => 'CsvFieldLengthValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFieldLengthValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFieldLengthValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFieldLengthValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: culture,language',
                         '\'culture\' values that exceed 6 characters: 0',
                         '\'language\' column may have invalid values.',
                         '\'language\' values that exceed 6 characters: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'language column value: english',
                     ],
                 ],
@@ -166,16 +166,16 @@ class CsvFieldLengthTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFieldLengthValidator' => CsvFieldLengthValidator::class],
                     'filename' => '/unix_csv_culture_language_length_errors.csv',
                     'testname' => 'CsvFieldLengthValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFieldLengthValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFieldLengthValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFieldLengthValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Checking columns: culture,language',
                         '\'culture\' column may have invalid values.',
                         '\'culture\' values that exceed 6 characters: 1',
                         '\'language\' column may have invalid values.',
                         '\'language\' values that exceed 6 characters: 2',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'language column value: this is spanish',
                         'culture column value: Germany',
                         'language column value: english',

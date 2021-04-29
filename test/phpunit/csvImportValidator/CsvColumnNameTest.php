@@ -59,10 +59,10 @@ class CsvColumnNameTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -87,12 +87,12 @@ class CsvColumnNameTest extends \PHPUnit\Framework\TestCase
                     'validatorOptions' => [
                         'source' => 'testsourcefile.csv',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnNameValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of unrecognized column names found in CSV: 0',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -106,12 +106,12 @@ class CsvColumnNameTest extends \PHPUnit\Framework\TestCase
                         'source' => 'testsourcefile.csv',
                         'className' => 'QubitInformationObject',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnNameValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of unrecognized column names found in CSV: 0',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -125,13 +125,13 @@ class CsvColumnNameTest extends \PHPUnit\Framework\TestCase
                         'source' => 'testsourcefile.csv',
                         'className' => 'QubitInformationObject',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnNameValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of unrecognized column names found in CSV: 1',
                         'Unrecognized columns will be ignored by AtoM when the CSV is imported.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'Unrecognized column: levilOfDescrooption',
                     ],
                 ],
@@ -146,15 +146,15 @@ class CsvColumnNameTest extends \PHPUnit\Framework\TestCase
                         'source' => 'testsourcefile.csv',
                         'className' => 'QubitInformationObject',
                     ],
-                    CsvBaseValidator::TEST_TITLE => CsvColumnNameValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvColumnNameValidator::RESULT_WARN,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvColumnNameValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Number of unrecognized column names found in CSV: 2',
                         'Unrecognized columns will be ignored by AtoM when the CSV is imported.',
                         'Number of column names with leading or trailing whitespace characters: 1',
                         'Number of unrecognized columns that may be case related: 1',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'Unrecognized column:  identifier',
                         'Unrecognized column: Title',
                         'Column names with leading or trailing whitespace: identifier',

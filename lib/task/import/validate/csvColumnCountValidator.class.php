@@ -64,21 +64,22 @@ class CsvColumnCountValidator extends CsvBaseValidator
     {
         // When rows are all same length then rowCountSummary will have 1 row.
         if (1 == count($this->rowCountSummary)) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Number of columns in CSV: %s', $this->headerCount));
+            $this->testData->setStatusInfo();
+            $this->testData->addResult(sprintf('Number of columns in CSV: %s', $this->headerCount));
 
             // Set a warning if there's less than 2 columns. This is probably an issue with field separators.
             if (1 >= $this->headerCount) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, 'CSV appears to have only one column - check CSV separator option matches file.');
+                $this->testData->setStatusWarn();
+                $this->testData->addResult('CSV appears to have only one column - check CSV separator option matches file.');
             }
         } else {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
+            $this->testData->setStatusError();
 
             foreach ($this->rowCountSummary as $columnCount => $numOccurrences) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Number of rows with %s columns: %s', $columnCount, $numOccurrences));
+                $this->testData->addResult(sprintf('Number of rows with %s columns: %s', $columnCount, $numOccurrences));
             }
-            $this->addTestResult(self::TEST_RESULTS, 'CSV rows with different lengths detected - check CSV enclosure option matches file.');
+
+            $this->testData->addResult('CSV rows with different lengths detected - check CSV enclosure option matches file.');
         }
 
         return parent::getTestResult();

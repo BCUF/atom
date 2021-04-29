@@ -72,10 +72,10 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -96,12 +96,12 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvLanguageValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'language\' column not present in file.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -111,12 +111,12 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_valid_languages.csv',
                     'testname' => 'CsvLanguageValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         '\'language\' column values are all valid.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                     ],
                 ],
             ],
@@ -126,15 +126,15 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_languages_some_invalid.csv',
                     'testname' => 'CsvLanguageValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvLanguageValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvLanguageValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'Rows with invalid language values: 2',
                         'Rows with pipe character in language values: 1',
                         '\'language\' column does not allow for multiple values separated with a pipe \'|\' character.',
                         'Invalid language values: Spanish, fr|en, en_gb',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [
+                    CsvValidatorResult::TEST_DETAIL => [
                         'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,es,Spanish',
                         ',,,Chemise,,,,fr,fr|en',
                         ',DJ003,ID4,Title Four,,,,en,en_gb',

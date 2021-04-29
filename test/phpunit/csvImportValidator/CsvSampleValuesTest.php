@@ -55,10 +55,10 @@ class CsvSampleValuesTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -77,9 +77,9 @@ class CsvSampleValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvSampleValuesValidator' => CsvSampleValuesValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvSampleValuesValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvSampleValuesValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvSampleValuesValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvSampleValuesValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'legacyId:  B10101',
                         'parentId:  DJ001',
                         'identifier:  ID1',
@@ -87,7 +87,7 @@ class CsvSampleValuesTest extends \PHPUnit\Framework\TestCase
                         'extentAndMedium:  Extent and medium 1',
                         'culture:  fr',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
         ];

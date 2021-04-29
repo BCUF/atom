@@ -51,7 +51,8 @@ class csvCheckImportTask extends arBaseTask
         $validator->setShowDisplayProgress(true);
         $validator->setFilenames($filenames);
         $results = $validator->validate();
-        $this->printResults($results);
+
+        $results->renderAsText();
 
         unset($validator);
     }
@@ -166,45 +167,5 @@ EOF;
         // Throw exception here if set option is invalid.
 
         // TODO: Add validation of class-name
-    }
-
-    protected function formatStatus(int $status)
-    {
-        switch ($status) {
-            case csvBaseValidator::RESULT_INFO:
-                return 'info';
-
-              case csvBaseValidator::RESULT_WARN:
-                return 'Warning';
-
-            case csvBaseValidator::RESULT_ERROR:
-                return 'ERROR';
-        }
-    }
-
-    protected function printResults(array $results)
-    {
-        foreach ($results as $filename => $fileGroup) {
-            $fileStr = sprintf("\nFilename: %s", $filename);
-            printf("%s\n", $fileStr);
-            printf("%s\n", str_repeat('=', strlen($fileStr)));
-
-            foreach ($fileGroup as $testResult) {
-                printf("\n%s - %s\n", $testResult['title'], $this->formatStatus($testResult['status']));
-                printf("%s\n", str_repeat('-', strlen($testResult['title'])));
-
-                foreach ($testResult['results'] as $line) {
-                    printf("%s\n", $line);
-                }
-
-                if ($this->verbose && 0 < count($testResult['details'])) {
-                    printf("\nDetails:\n");
-
-                    foreach ($testResult['details'] as $line) {
-                        printf("%s\n", $line);
-                    }
-                }
-            }
-        }
     }
 }

@@ -39,9 +39,9 @@ class CsvFieldLengthValidator extends CsvBaseValidator
 
     // Associate action with field.
     protected $fieldAction = [
-        'culture' => self::RESULT_WARN,
-        'language' => self::RESULT_WARN,
-        'script' => self::RESULT_WARN,
+        'culture' => CsvValidatorResult::RESULT_WARN,
+        'language' => CsvValidatorResult::RESULT_WARN,
+        'script' => CsvValidatorResult::RESULT_WARN,
     ];
 
     protected $columnsFound = [];
@@ -85,28 +85,27 @@ class CsvFieldLengthValidator extends CsvBaseValidator
             // Check if value length is greater than configured max field length.
             if (strlen($row[$columnName]) > $this->fieldMaxSizes[$columnName]) {
                 ++$this->columnsFound[$columnName];
-
-                $this->addTestResult(self::TEST_DETAIL, sprintf('%s column value: %s', $columnName, $row[$columnName]));
+                $this->testData->addDetail(sprintf('%s column value: %s', $columnName, $row[$columnName]));
             }
         }
     }
 
     public function getTestResult()
     {
-        $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
+        $this->testData->setStatusInfo();
 
         if (empty($this->columnsFound)) {
-            $this->addTestResult(self::TEST_RESULTS, 'No columns to check.');
+            $this->testData->addResult('No columns to check.');
         } else {
-            $this->addTestResult(self::TEST_RESULTS, sprintf('Checking columns: %s', implode(',', array_keys($this->columnsFound))));
+            $this->testData->addResult(sprintf('Checking columns: %s', implode(',', array_keys($this->columnsFound))));
         }
 
         foreach ($this->columnsFound as $columnName => $errorCount) {
             if (0 < $errorCount) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' column may have invalid values.", $columnName));
+                $this->testData->setStatusWarn();
+                $this->testData->addResult(sprintf("'%s' column may have invalid values.", $columnName));
             }
-            $this->addTestResult(self::TEST_RESULTS, sprintf("'%s' values that exceed %s characters: %s", $columnName, $this->fieldMaxSizes[$columnName], $errorCount));
+            $this->testData->addResult(sprintf("'%s' values that exceed %s characters: %s", $columnName, $this->fieldMaxSizes[$columnName], $errorCount));
         }
 
         return parent::getTestResult();

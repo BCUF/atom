@@ -46,7 +46,8 @@ class CsvImportValidator
     protected $header;
     protected $rows = [];
     protected $showDisplayProgress = false;
-    protected $results = [];
+    //protected $results = [];
+    protected $resultCollection;
     protected $ormClasses = [];
 
     // Default options:
@@ -157,6 +158,8 @@ class CsvImportValidator
             $this->setCsvTests($this->getTestsByClassType());
         }
 
+        $this->resultCollection = new CsvValidatorResultCollection();
+
         foreach ($this->filenames as $filename) {
             if (false === $fh = fopen($filename, 'rb')) {
                 throw new sfException('You must specify a valid filename');
@@ -184,8 +187,8 @@ class CsvImportValidator
 
             // Gather results for this CSV file.
             // Call reset() on each test.
-            foreach ($this->csvTests as $testkey => $test) {
-                $this->results[$filename][$testkey] = $test->getTestResult();
+            foreach ($this->csvTests as $testname => $test) {
+                $this->resultCollection->appendResult($test->getTestResult(), $filename, $testname);
                 $test->reset();
             }
         }
@@ -194,7 +197,7 @@ class CsvImportValidator
             echo $this->renderProgressDescription(true);
         }
 
-        return $this->results;
+        return $this->resultCollection;
     }
 
     public function setShowDisplayProgress(bool $value)
@@ -214,16 +217,12 @@ class CsvImportValidator
 
     public function getResults()
     {
-        return $this->results;
+        return $this->resultCollection;
     }
 
     public function getResultsByFilenameTestname(string $filename, string $testname)
     {
-        if (isset($filename, $testname)) {
-            if (isset($this->results[$filename][$testname])) {
-                return $this->results[$filename][$testname];
-            }
-        }
+        return $this->resultCollection->getResultByFilenameTestname($filename, $testname);
     }
 
     public function setOrmClasses(array $classes)

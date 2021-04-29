@@ -67,7 +67,7 @@ class CsvLegacyIdValidator extends CsvBaseValidator
         if ($this->legacyIdColumnPresent) {
             if (empty($row['legacyId'])) {
                 ++$this->rowsWithoutLegacyId;
-                $this->addTestResult(self::TEST_DETAIL, implode(',', $row));
+                $this->testData->addDetail(implode(',', $row));
             } else {
                 if (in_array($row['legacyId'], $this->legacyIdValues)) {
                     // This is a duplicate legacyId. Add to list of non-unique legacyIds.
@@ -82,27 +82,27 @@ class CsvLegacyIdValidator extends CsvBaseValidator
     public function getTestResult()
     {
         if (false == $this->legacyIdColumnPresent) {
-            $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-            $this->addTestResult(self::TEST_RESULTS, sprintf("'legacyId' column not present. Future CSV updates may not match these records."));
+            $this->testData->setStatusWarn();
+            $this->testData->addResult(sprintf("'legacyId' column not present. Future CSV updates may not match these records."));
         } else {
             // Rows exist with non unique legacyId. Warn that this will complicate/break future CSV update matching.
             if (0 < count($this->nonUniqueLegacyIdValues)) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_ERROR);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with non-unique 'legacyId' values: %s", count($this->nonUniqueLegacyIdValues)));
-                $this->addTestResult(self::TEST_DETAIL, sprintf("Non-unique 'legacyId' values: %s", implode(', ', $this->nonUniqueLegacyIdValues)));
+                $this->testData->setStatusError();
+                $this->testData->addResult(sprintf("Rows with non-unique 'legacyId' values: %s", count($this->nonUniqueLegacyIdValues)));
+                $this->testData->addDetail(sprintf("Non-unique 'legacyId' values: %s", implode(', ', $this->nonUniqueLegacyIdValues)));
             } else {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_INFO);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("'legacyId' values are all unique."));
+                $this->testData->setStatusInfo();
+                $this->testData->addResult(sprintf("'legacyId' values are all unique."));
             }
 
             // Rows exist with both parentId and qubitParentSlug populated. Warn that qubitParentSlug will override.
             if (0 < $this->rowsWithoutLegacyId) {
-                $this->addTestResult(self::TEST_STATUS, self::RESULT_WARN);
-                $this->addTestResult(self::TEST_RESULTS, sprintf("Rows with empty 'legacyId' column: %s", $this->rowsWithoutLegacyId));
+                $this->testData->setStatusWarn();
+                $this->testData->addResult(sprintf("Rows with empty 'legacyId' column: %s", $this->rowsWithoutLegacyId));
             }
 
             if (0 < $this->rowsWithoutLegacyId || 0 < count($this->nonUniqueLegacyIdValues)) {
-                $this->addTestResult(self::TEST_RESULTS, sprintf('Future CSV updates may not match these records.'));
+                $this->testData->addResult(sprintf('Future CSV updates may not match these records.'));
             }
         }
 

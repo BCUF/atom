@@ -69,10 +69,10 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
         $this->runValidator($csvValidator, $filename, $options['csvValidatorClasses']);
         $result = $csvValidator->getResultsByFilenameTestname($filename, $options['testname']);
 
-        $this->assertSame($options[CsvBaseValidator::TEST_TITLE], $result[CsvBaseValidator::TEST_TITLE]);
-        $this->assertSame($options[CsvBaseValidator::TEST_STATUS], $result[CsvBaseValidator::TEST_STATUS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_RESULTS], $result[CsvBaseValidator::TEST_RESULTS]);
-        $this->assertSame($options[CsvBaseValidator::TEST_DETAIL], $result[CsvBaseValidator::TEST_DETAIL]);
+        $this->assertSame($options[CsvValidatorResult::TEST_TITLE], $result[CsvValidatorResult::TEST_TITLE]);
+        $this->assertSame($options[CsvValidatorResult::TEST_STATUS], $result[CsvValidatorResult::TEST_STATUS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_RESULTS], $result[CsvValidatorResult::TEST_RESULTS]);
+        $this->assertSame($options[CsvValidatorResult::TEST_DETAIL], $result[CsvValidatorResult::TEST_DETAIL]);
     }
 
     public function csvValidatorTestProvider()
@@ -85,13 +85,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a UTF-8 BOM.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -100,12 +100,12 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -114,13 +114,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv_with_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a UTF-8 BOM.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -129,12 +129,12 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv_without_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_INFO,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -143,12 +143,12 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv-windows_1252.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding does not appear to be UTF-8 compatible.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [implode(',', str_getcsv(mb_convert_encoding('"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""', 'Windows-1252', 'UTF-8')))],
+                    CsvValidatorResult::TEST_DETAIL => [implode(',', str_getcsv(mb_convert_encoding('"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""', 'Windows-1252', 'UTF-8')))],
                 ],
             ],
 
@@ -157,12 +157,12 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv-windows_1252.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding does not appear to be UTF-8 compatible.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [implode(',', str_getcsv(mb_convert_encoding('"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""', 'Windows-1252', 'UTF-8')))],
+                    CsvValidatorResult::TEST_DETAIL => [implode(',', str_getcsv(mb_convert_encoding('"D20202", "DJ002", "", "Voûte, étagère 0074", "", "", "", ""', 'Windows-1252', 'UTF-8')))],
                 ],
             ],
 
@@ -171,13 +171,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf16LE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a unicode BOM, but it is not UTF-8.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -186,13 +186,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf16BE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a unicode BOM, but it is not UTF-8.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -201,13 +201,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf32LE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a unicode BOM, but it is not UTF-8.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
 
@@ -216,13 +216,13 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf32BE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
-                    CsvBaseValidator::TEST_TITLE => CsvFileEncodingValidator::TITLE,
-                    CsvBaseValidator::TEST_STATUS => CsvFileEncodingValidator::RESULT_ERROR,
-                    CsvBaseValidator::TEST_RESULTS => [
+                    CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
+                    CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
+                    CsvValidatorResult::TEST_RESULTS => [
                         'File encoding is UTF-8 compatible.',
                         'This file includes a unicode BOM, but it is not UTF-8.',
                     ],
-                    CsvBaseValidator::TEST_DETAIL => [],
+                    CsvValidatorResult::TEST_DETAIL => [],
                 ],
             ],
         ];
