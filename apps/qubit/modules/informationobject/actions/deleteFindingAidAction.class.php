@@ -28,6 +28,11 @@ class InformationObjectDeleteFindingAidAction extends sfAction
             $this->forward404();
         }
 
+        // Check user authorization
+        if (!$this->context->user->isAuthenticated()) {
+            QubitAcl::forwardUnauthorized();
+        }
+
         $this->form = new sfForm();
         $findingAid = new QubitFindingAid($this->resource);
 
