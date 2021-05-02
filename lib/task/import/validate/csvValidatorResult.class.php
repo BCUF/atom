@@ -35,9 +35,14 @@ class CsvValidatorResult
     const TEST_DETAIL = 'details';
 
     protected $testData = [];
+    protected $filename;
+    protected $classname;
 
-    public function __construct(string $title = '')
+    public function __construct(string $title = '', string $filename = '', string $classname = '')
     {
+        $this->filename = $filename;
+        $this->classname = $classname;
+
         $this->testData = [
             self::TEST_TITLE => $title,
             self::TEST_STATUS => self::RESULT_INFO,
@@ -110,8 +115,37 @@ class CsvValidatorResult
         return $this->testData[self::TEST_RESULTS];
     }
 
+    public function getFilename(): string
+    {
+        return $this->filename;
+    }
+
+    public function setFilename(string $filename)
+    {
+        $this->filename = $filename;
+    }
+
+    public function getClassname(): string
+    {
+        return $this->classname;
+    }
+
     public function toArray()
     {
         return $this->testData;
+    }
+
+    public static function formatStatus(int $status)
+    {
+        switch ($status) {
+            case self::RESULT_INFO:
+                return 'info';
+
+            case self::RESULT_WARN:
+                return 'Warning';
+
+            case self::RESULT_ERROR:
+                return 'ERROR';
+        }
     }
 }

@@ -30,19 +30,19 @@ class CsvValidatorResultCollection
     {
     }
 
-    public function appendResult(CsvValidatorResult $result, string $filename, string $testname)
+    public function appendResult(CsvValidatorResult $result)
     {
-        $this->results[$filename][$testname] = $result;
+        $this->results[] = $result;
+
+        $this->sortByFilenameStatusDescending();
     }
 
     public function toArray()
     {
         $resultArray = [];
 
-        foreach ($this->results as $filename => $fileTests) {
-            foreach ($fileTests as $testname => $testResult) {
-                $resultArray[$filename][$testname] = $testResult->toArray();
-            }
+        foreach ($this->results as $testResult) {
+            $resultArray[$testResult->getFilename()][$testResult->getClassname()] = $testResult->toArray();
         }
 
         return $resultArray;
@@ -55,46 +55,56 @@ class CsvValidatorResultCollection
 
     public function getResultByFilenameTestname(string $filename, string $testname)
     {
+        foreach ($this->results as $result) {
+            if ($filename == $result->getFilename() && $testname == $result->getClassname()) {
+                return $result->toArray();
+            }
+        }
+
         return $this->results[$filename][$testname]->toArray();
     }
 
-    public function renderAsText()
+    public function getErrorCount()
     {
-        foreach ($this->results as $filename => $fileGroup) {
-            $fileStr = sprintf("\nFilename: %s", $filename);
-            printf("%s\n", $fileStr);
-            printf("%s\n", str_repeat('=', strlen($fileStr)));
+        $errorCount = 0;
 
-            foreach ($fileGroup as $testResult) {
-                printf("\n%s - %s\n", $testResult->getTitle(), $this->formatStatus($testResult->getStatus()));
-                printf("%s\n", str_repeat('-', strlen($testResult->getTitle())));
-
-                foreach ($testResult->getResults() as $line) {
-                    printf("%s\n", $line);
-                }
-
-                if ($this->verbose && 0 < count($testResult->getDetails())) {
-                    printf("\nDetails:\n");
-
-                    foreach ($testResult->getDetails() as $line) {
-                        printf("%s\n", $line);
-                    }
-                }
+        foreach ($this->results as $testResult) {
+            if (CsvValidatorResult::RESULT_ERROR === $testResult->getStatus()) {
+                ++$errorCount;
             }
         }
+
+        return $errorCount;
     }
 
-    protected function formatStatus(int $status)
+    public function getWarnCount()
     {
-        switch ($status) {
-            case CsvValidatorResult::RESULT_INFO:
-                return 'info';
+        $warnCount = 0;
 
-            case CsvValidatorResult::RESULT_WARN:
-                return 'Warning';
-
-            case CsvValidatorResult::RESULT_ERROR:
-                return 'ERROR';
+        foreach ($this->results as $testResult) {
+            if (CsvValidatorResult::RESULT_WARN === $testResult->getStatus()) {
+                ++$warnCount;
+            }
         }
+
+        return $warnCount;
+    }
+
+    public function sortByFilenameStatusDescending()
+    {
+        uasort($this->results, ['CsvValidatorResultCollection', 'compare']);
+    }
+
+    protected function compare($a, $b)
+    {
+        if ($a->getFilename() == $b->getFilename()) {
+            if ($a->getStatus() == $b->getStatus()) {
+                return 0;
+            }
+
+            return ($a->getStatus() > $b->getStatus()) ? -1 : 1;
+        }
+
+        return ($a->getFilename() < $b->getFilename()) ? -1 : 1;
     }
 }

@@ -43,10 +43,8 @@ class CsvDigitalObjectPathValidator extends CsvBaseValidator
 
     public function __construct(array $options = null)
     {
-        parent::__construct($options);
-
         $this->setTitle(self::TITLE);
-        $this->reset();
+        parent::__construct($options);
 
         $this->setPathToDigitalObjects($this->options['pathToDigitalObjects']);
     }

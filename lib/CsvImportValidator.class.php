@@ -46,7 +46,6 @@ class CsvImportValidator
     protected $header;
     protected $rows = [];
     protected $showDisplayProgress = false;
-    //protected $results = [];
     protected $resultCollection;
     protected $ormClasses = [];
 
@@ -158,6 +157,7 @@ class CsvImportValidator
             $this->setCsvTests($this->getTestsByClassType());
         }
 
+        unset($this->resultCollection);
         $this->resultCollection = new CsvValidatorResultCollection();
 
         foreach ($this->filenames as $filename) {
@@ -186,10 +186,13 @@ class CsvImportValidator
             }
 
             // Gather results for this CSV file.
-            // Call reset() on each test.
             foreach ($this->csvTests as $testname => $test) {
-                $this->resultCollection->appendResult($test->getTestResult(), $filename, $testname);
-                $test->reset();
+                $this->resultCollection->appendResult($test->getTestResult());
+
+                // Reset test if more than one input CSV passed.
+                if ((1 < count($this->filenames)) ? true : false) {
+                    $test->reset();
+                }
             }
         }
 

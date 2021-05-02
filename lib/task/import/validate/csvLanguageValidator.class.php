@@ -38,12 +38,10 @@ class CsvLanguageValidator extends CsvBaseValidator
 
     public function __construct(array $options = null)
     {
+        $this->setTitle(self::TITLE);
         parent::__construct($options);
 
         $this->languages = array_keys(sfCultureInfo::getInstance()->getLanguages());
-
-        $this->setTitle(self::TITLE);
-        $this->reset();
     }
 
     public function reset()
