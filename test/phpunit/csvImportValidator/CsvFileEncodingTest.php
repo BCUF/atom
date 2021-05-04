@@ -85,6 +85,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -100,6 +103,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -114,6 +120,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv_with_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -129,6 +138,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv_without_utf8_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -143,6 +155,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv-windows_1252.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -157,6 +172,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/windows_csv-windows_1252.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -171,6 +189,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf16LE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -186,6 +207,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf16BE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -201,6 +225,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf32LE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -216,6 +243,9 @@ class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvFileEncodingValidator' => CsvFileEncodingValidator::class],
                     'filename' => '/unix_csv_with_utf32BE_bom.csv',
                     'testname' => 'CsvFileEncodingValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvFileEncodingValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [

@@ -225,7 +225,7 @@ class CsvImportValidator
 
     public function getResultsByFilenameTestname(string $filename, string $testname)
     {
-        return $this->resultCollection->getResultByFilenameTestname($filename, $testname);
+        return $this->resultCollection->getByFilenameTestname($filename, $testname);
     }
 
     public function setOrmClasses(array $classes)

@@ -25,7 +25,7 @@
  */
 class csvCheckImportTask extends arBaseTask
 {
-    protected $verbose;
+    protected $verbose = false;
 
     /**
      * @see sfTask
@@ -51,7 +51,8 @@ class csvCheckImportTask extends arBaseTask
         $validator->setShowDisplayProgress(true);
         $validator->setFilenames($filenames);
         $results = $validator->validate();
-        $this->renderResults($results);
+
+        CsvValidatorResultCollection::renderResultsAsText($results, $this->verbose);
 
         unset($validator);
     }
@@ -166,42 +167,5 @@ EOF;
         // Throw exception here if set option is invalid.
 
         // TODO: Add validation of class-name
-    }
-
-    protected function renderResults(CsvValidatorResultCollection $results)
-    {
-        $errorCount = $results->getErrorCount();
-        $warnCount = $results->getWarnCount();
-
-        if (!empty($errorCount)) {
-            printf("\n\n** Issues have been detected in this CSV that will prevent it from being imported correctly.\n");
-        }
-        printf("Errors: %s\n", $errorCount);
-        printf("Warnings: %s\n", $warnCount);
-
-        $resultArray = $results->toArray();
-
-        foreach ($resultArray as $filename => $fileGroup) {
-            $fileStr = sprintf("\nFilename: %s", $filename);
-            printf("%s\n", $fileStr);
-            printf("%s\n", str_repeat('=', strlen($fileStr)));
-
-            foreach ($fileGroup as $testResult) {
-                printf("\n%s - %s\n", $testResult['title'], CsvValidatorResult::formatStatus($testResult['status']));
-                printf("%s\n", str_repeat('-', strlen($testResult['title'])));
-
-                foreach ($testResult['results'] as $line) {
-                    printf("%s\n", $line);
-                }
-
-                if ($this->verbose && 0 < count($testResult['details'])) {
-                    printf("\nDetails:\n");
-
-                    foreach ($testResult['details'] as $line) {
-                        printf("%s\n", $line);
-                    }
-                }
-            }
-        }
     }
 }

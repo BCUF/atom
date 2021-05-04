@@ -110,6 +110,9 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectPathValidator' => CsvDigitalObjectPathValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDigitalObjectPathValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -125,6 +128,9 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectPathValidator' => CsvDigitalObjectPathValidator::class],
                     'filename' => '/unix_csv_with_digital_object_cols.csv',
                     'testname' => 'CsvDigitalObjectPathValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -146,6 +152,7 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'className' => 'QubitInformationObject',
                         'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
+                        'verbose' => true,
                     ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
@@ -168,6 +175,7 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                         'className' => 'QubitInformationObject',
                         'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
+                        'verbose' => true,
                     ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectPathValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
@@ -208,6 +216,9 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectUriValidator' => CsvDigitalObjectUriValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDigitalObjectUriValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -223,6 +234,9 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDigitalObjectUriValidator' => CsvDigitalObjectUriValidator::class],
                     'filename' => '/unix_csv_with_digital_object_cols.csv',
                     'testname' => 'CsvDigitalObjectUriValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -242,8 +256,8 @@ class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
                     'validatorOptions' => [
                         'source' => 'testsourcefile.csv',
                         'className' => 'QubitInformationObject',
-                        'className' => 'QubitInformationObject',
                         'pathToDigitalObjects' => 'vfs://root/digital_objects',
+                        'verbose' => true,
                     ],
                     CsvValidatorResult::TEST_TITLE => CsvDigitalObjectUriValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,

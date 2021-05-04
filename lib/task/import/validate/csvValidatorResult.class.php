@@ -38,8 +38,9 @@ class CsvValidatorResult
     protected $filename;
     protected $classname;
 
-    public function __construct(string $title = '', string $filename = '', string $classname = '')
+    public function __construct(string $title = '', string $filename = '', string $classname = '', bool $verbose = false)
     {
+        $this->verbose = $verbose;
         $this->filename = $filename;
         $this->classname = $classname;
 

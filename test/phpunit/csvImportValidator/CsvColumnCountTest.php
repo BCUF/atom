@@ -123,6 +123,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -137,7 +140,10 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvColumnCountValidator',
-                    'validatorOptions' => ['separator' => 'j'],
+                    'validatorOptions' => [
+                        'separator' => 'j',
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -153,6 +159,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_header.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -169,6 +178,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_header.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -185,6 +197,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_row.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -201,6 +216,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_row.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -217,6 +235,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_short_rows.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -234,6 +255,9 @@ class CsvColumnCountTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvColumnCountValidator' => CsvColumnCountValidator::class],
                     'filename' => '/unix_csv_with_long_rows.csv',
                     'testname' => 'CsvColumnCountValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvColumnCountValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [

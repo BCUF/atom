@@ -84,6 +84,9 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -99,6 +102,9 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_one_duplicated_header.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -114,6 +120,9 @@ class CsvDuplicateColumnNameTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvDuplicateColumnNameValidator' => CsvDuplicateColumnNameValidator::class],
                     'filename' => '/unix_csv_duplicated_headers.csv',
                     'testname' => 'CsvDuplicateColumnNameValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvDuplicateColumnNameValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [

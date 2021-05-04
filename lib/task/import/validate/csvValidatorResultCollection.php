@@ -37,7 +37,7 @@ class CsvValidatorResultCollection
         $this->sortByFilenameStatusDescending();
     }
 
-    public function toArray()
+    public function toArray(bool $verbose = false)
     {
         $resultArray = [];
 
@@ -48,12 +48,12 @@ class CsvValidatorResultCollection
         return $resultArray;
     }
 
-    public function toJson()
+    public function toJson(bool $verbose = false)
     {
-        return json_encode($this->toArray());
+        return json_encode($this->toArray($verbose));
     }
 
-    public function getResultByFilenameTestname(string $filename, string $testname)
+    public function getByFilenameTestname(string $filename, string $testname)
     {
         foreach ($this->results as $result) {
             if ($filename == $result->getFilename() && $testname == $result->getClassname()) {
@@ -93,6 +93,51 @@ class CsvValidatorResultCollection
     public function sortByFilenameStatusDescending()
     {
         uasort($this->results, ['CsvValidatorResultCollection', 'compare']);
+    }
+
+    public static function renderResultsAsText(CsvValidatorResultCollection $results, bool $verbose = false)
+    {
+        $errorCount = $results->getErrorCount();
+        $warnCount = $results->getWarnCount();
+
+        if (!empty($errorCount)) {
+            printf("\n** Issues have been detected with this CSV that will prevent it from being imported correctly.\n\n");
+        } elseif (!empty($warnCount)) {
+            printf("\n** Warnings should be reviewed before proceeding with importing this CSV.\n\n");
+        } else {
+            printf("\nNo issues detected.\n\n");
+        }
+
+        printf("Errors: %s\n", $errorCount);
+        printf("Warnings: %s\n", $warnCount);
+
+        $resultArray = $results->toArray();
+
+        foreach ($resultArray as $filename => $fileGroup) {
+            $fileStr = sprintf("\nFilename: %s", $filename);
+            printf("%s\n", $fileStr);
+            printf("%s\n", str_repeat('=', strlen($fileStr)));
+
+            foreach ($fileGroup as $testResult) {
+                if (CsvValidatorResult::RESULT_INFO === $testResult['status'] && !$verbose) {
+                    continue;
+                }
+                printf("\n%s - %s\n", $testResult['title'], CsvValidatorResult::formatStatus($testResult['status']));
+                printf("%s\n", str_repeat('-', strlen($testResult['title'])));
+
+                foreach ($testResult['results'] as $line) {
+                    printf("%s\n", $line);
+                }
+
+                if ($verbose && 0 < count($testResult['details'])) {
+                    printf("\nDetails:\n");
+
+                    foreach ($testResult['details'] as $line) {
+                        printf("%s\n", $line);
+                    }
+                }
+            }
+        }
     }
 
     protected function compare($a, $b)

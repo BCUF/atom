@@ -96,6 +96,9 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvLanguageValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -111,6 +114,9 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_valid_languages.csv',
                     'testname' => 'CsvLanguageValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -126,6 +132,9 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvLanguageValidator' => CsvLanguageValidator::class],
                     'filename' => '/unix_csv_languages_some_invalid.csv',
                     'testname' => 'CsvLanguageValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvLanguageValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [

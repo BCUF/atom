@@ -106,6 +106,9 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvEventValuesValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -121,6 +124,9 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type.csv',
                     'testname' => 'CsvEventValuesValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -136,6 +142,9 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type_mismatches.csv',
                     'testname' => 'CsvEventValuesValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_WARN,
                     CsvValidatorResult::TEST_RESULTS => [
@@ -153,6 +162,9 @@ class CsvEventValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvEventValuesValidator' => CsvEventValuesValidator::class],
                     'filename' => '/unix_csv_with_event_type_all_cols.csv',
                     'testname' => 'CsvEventValuesValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvEventValuesValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [

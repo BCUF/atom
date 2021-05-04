@@ -77,6 +77,9 @@ class CsvSampleValuesTest extends \PHPUnit\Framework\TestCase
                     'csvValidatorClasses' => ['CsvSampleValuesValidator' => CsvSampleValuesValidator::class],
                     'filename' => '/unix_csv_without_utf8_bom.csv',
                     'testname' => 'CsvSampleValuesValidator',
+                    'validatorOptions' => [
+                        'verbose' => true,
+                    ],
                     CsvValidatorResult::TEST_TITLE => CsvSampleValuesValidator::TITLE,
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_INFO,
                     CsvValidatorResult::TEST_RESULTS => [
