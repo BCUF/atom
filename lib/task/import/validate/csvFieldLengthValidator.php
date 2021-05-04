@@ -34,7 +34,12 @@ class CsvFieldLengthValidator extends CsvBaseValidator
     protected $fieldMaxSizes = [
         'culture' => 6,
         'language' => 6,
-        'script' => 6,
+        'script' => 4,
+    ];
+
+    protected $multivalue = [
+        'language',
+        'script',
     ];
 
     // Associate action with field.
@@ -82,7 +87,18 @@ class CsvFieldLengthValidator extends CsvBaseValidator
         // Check each field present.
         foreach ($this->columnsFound as $columnName => $errorCount) {
             // Check if value length is greater than configured max field length.
-            if (strlen($row[$columnName]) > $this->fieldMaxSizes[$columnName]) {
+            if (in_array($columnName, $this->multivalue)) {
+                $errorDetailAdded = false;
+                foreach (explode('|', $row[$columnName]) as $value) {
+                    if (strlen(trim($value)) > $this->fieldMaxSizes[$columnName]) {
+                        ++$this->columnsFound[$columnName];
+                        if (!$errorDetailAdded) {
+                            $this->testData->addDetail(sprintf('%s column value: %s', $columnName, $row[$columnName]));
+                            $errorDetailAdded = true;
+                        }
+                    }
+                }
+            } elseif (strlen($row[$columnName]) > $this->fieldMaxSizes[$columnName]) {
                 ++$this->columnsFound[$columnName];
                 $this->testData->addDetail(sprintf('%s column value: %s', $columnName, $row[$columnName]));
             }

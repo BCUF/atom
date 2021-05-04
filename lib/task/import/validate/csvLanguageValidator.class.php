@@ -18,8 +18,7 @@
  */
 
 /**
- * CSV language column test. Check if present, check values against master list,
- * and check if piped value.
+ * CSV language column test. Check if present, check values against master list.
  *
  * @author     Steve Breker <sbreker@artefactual.com>
  *
@@ -32,7 +31,6 @@ class CsvLanguageValidator extends CsvBaseValidator
     protected $languages = [];
 
     protected $languageColumnPresent;
-    protected $rowsWithPipeFoundInLanguage = 0;
     protected $rowsWithInvalidLanguage = 0;
     protected $invalidLanguages = [];
 
@@ -67,24 +65,20 @@ class CsvLanguageValidator extends CsvBaseValidator
         // If present check contents.
         if ($this->languageColumnPresent) {
             if (!empty($row['language'])) {
-                // Check if contains pipe.
-                if (0 < strpos($row['language'], '|')) {
-                    ++$this->rowsWithPipeFoundInLanguage;
-                    $this->testData->addDetail(implode(',', $row));
-
-                    // Keep a list of invalid language values.
-                    if (!in_array($row['language'], $this->invalidLanguages)) {
-                        $this->invalidLanguages[] = $row['language'];
-                    }
-                }
                 // Validate language value against AtoM.
-                elseif (!$this->isLanguageValid($row['language'])) {
-                    ++$this->rowsWithInvalidLanguage;
-                    $this->testData->addDetail(implode(',', $row));
+                $errorDetailAdded = false;
+                foreach (explode('|', $row['language']) as $value) {
+                    if (!$this->isLanguageValid(trim($value))) {
+                        if (!$errorDetailAdded) {
+                            ++$this->rowsWithInvalidLanguage;
+                            $this->testData->addDetail(implode(',', $row));
+                            $errorDetailAdded = true;
+                        }
 
-                    // Keep a list of invalid language values.
-                    if (!in_array($row['language'], $this->invalidLanguages)) {
-                        $this->invalidLanguages[] = $row['language'];
+                        // Keep a list of invalid language values.
+                        if (!in_array($row['language'], $this->invalidLanguages)) {
+                            $this->invalidLanguages[] = trim($value);
+                        }
                     }
                 }
             }
@@ -106,18 +100,11 @@ class CsvLanguageValidator extends CsvBaseValidator
                 $this->testData->addResult(sprintf('Rows with invalid language values: %s', $this->rowsWithInvalidLanguage));
             }
 
-            // Rows exist with language containing pipe '|'
-            if (0 < $this->rowsWithPipeFoundInLanguage) {
-                $this->testData->setStatusError();
-                $this->testData->addResult(sprintf('Rows with pipe character in language values: %s', $this->rowsWithPipeFoundInLanguage));
-                $this->testData->addResult(sprintf("'language' column does not allow for multiple values separated with a pipe '|' character."));
-            }
-
-            if (0 < $this->rowsWithInvalidLanguage || 0 < $this->rowsWithPipeFoundInLanguage) {
+            if (0 < $this->rowsWithInvalidLanguage) {
                 $this->testData->addResult(sprintf('Invalid language values: %s', implode(', ', $this->invalidLanguages)));
             }
 
-            if (0 == $this->rowsWithInvalidLanguage && 0 == $this->rowsWithPipeFoundInLanguage) {
+            if (0 == $this->rowsWithInvalidLanguage) {
                 $this->testData->addResult(sprintf("'language' column values are all valid."));
             }
         }

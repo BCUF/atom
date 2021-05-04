@@ -130,13 +130,10 @@ class CsvLanguageTest extends \PHPUnit\Framework\TestCase
                     CsvValidatorResult::TEST_STATUS => CsvValidatorResult::RESULT_ERROR,
                     CsvValidatorResult::TEST_RESULTS => [
                         'Rows with invalid language values: 2',
-                        'Rows with pipe character in language values: 1',
-                        '\'language\' column does not allow for multiple values separated with a pipe \'|\' character.',
-                        'Invalid language values: Spanish, fr|en, en_gb',
+                        'Invalid language values: Spanish, en_gb',
                     ],
                     CsvValidatorResult::TEST_DETAIL => [
                         'B10101,DJ001,ID1,Some Photographs,,Extent and medium 1,,es,Spanish',
-                        ',,,Chemise,,,,fr,fr|en',
                         ',DJ003,ID4,Title Four,,,,en,en_gb',
                     ],
                 ],
