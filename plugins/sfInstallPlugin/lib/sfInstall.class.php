@@ -203,8 +203,8 @@ class sfInstall
 
         // TODO We do not want to cache anything during install, but currently we
         // must clear the cache after adding enabling sfInstallPlugin : (
-        $cacheClear = new sfCacheClearTask(sfContext::getInstance()->getEventDispatcher(), new sfFormatter());
-        $cacheClear->run();
+        //$cacheClear = new sfCacheClearTask(sfContext::getInstance()->getEventDispatcher(), new sfFormatter());
+        //$cacheClear->run();
 
         sfConfig::set('sf_debug', $saveDebug);
         sfConfig::set('sf_logging_enabled', $saveLoggingEnabled);
@@ -277,13 +277,13 @@ class sfInstall
             $e = opcache_invalidate($configFile, true);
         }
 
-        $databaseManager = sfContext::getInstance()->databaseManager;
+        //$databaseManager = sfContext::getInstance()->databaseManager;
 
         // TODO Currently need to reload after configuring the database
-        $databaseManager->loadConfiguration();
+        //$databaseManager->loadConfiguration();
 
         try {
-            sfContext::getInstance()->getDatabaseConnection('propel');
+            //sfContext::getInstance()->getDatabaseConnection('propel');
         } catch (Exception $e) {
             $database[] = $e;
         }
@@ -377,6 +377,7 @@ class sfInstall
 
         $object = new QubitInformationObject();
         $object->id = QubitInformationObject::ROOT_ID;
+        $object->indexOnSave = false;
         $object->save();
 
         $object = new QubitActor();
