@@ -35,7 +35,10 @@ class QubitObject extends BaseObject implements Zend_Acl_Resource_Interface
                     );
                     $statement->execute([$this->id]);
                     $row = $statement->fetch();
-                    $this->values['slug'] = $row[0];
+
+                    if (false !== $row = $statement->fetch()) {
+                        $this->values['slug'] = $row[0];
+                    }
                 }
 
                 return isset($this->values['slug']);
