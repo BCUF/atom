@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvParentIdTest
+ * @covers \CsvParentValidator
  */
 class CsvParentTest extends \PHPUnit\Framework\TestCase
 {

@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvDuplicateEmptyRowTest
+ * @covers \CsvEmptyRowValidator
  */
 class CsvEmptyRowTest extends \PHPUnit\Framework\TestCase
 {

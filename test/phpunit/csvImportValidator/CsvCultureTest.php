@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvCultureTest
+ * @covers \CsvCultureValidator
  */
 class CsvCultureTest extends \PHPUnit\Framework\TestCase
 {

@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvSampleValuesTest
+ * @covers \CsvSampleValuesValidator
  */
 class CsvSampleValuesTest extends \PHPUnit\Framework\TestCase
 {

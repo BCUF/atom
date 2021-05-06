@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvDigitalObjectTest
+ * @covers \CsvDigitalObjectPathValidator
  */
 class CsvDigitalObjectTest extends \PHPUnit\Framework\TestCase
 {

@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvLegacyIdTest
+ * @covers \CsvLegacyIdValidator
  */
 class CsvLegacyIdTest extends \PHPUnit\Framework\TestCase
 {

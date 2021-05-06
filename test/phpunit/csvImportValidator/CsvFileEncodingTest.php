@@ -4,7 +4,7 @@ use org\bovigo\vfs\vfsStream;
 
 /**
  * @internal
- * @covers \csvFileEncodingTest
+ * @covers \CsvFileEncodingValidator
  */
 class CsvFileEncodingTest extends \PHPUnit\Framework\TestCase
 {
