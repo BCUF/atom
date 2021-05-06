@@ -25,7 +25,15 @@ class QubitResourceRoute extends QubitRoute
         $criteria->add(QubitSlug::SLUG, $params['slug']);
         $criteria->addJoin(QubitSlug::OBJECT_ID, QubitObject::ID);
 
-        $this->resource = QubitObject::get($criteria)->__get(0);
+        // Transform PropelException to sfError404Exception so it gets
+        // handled by the routing logic instead of breaking the context
+        // initialization when the DB is not yet initiated (install task).
+        try {
+            $this->resource = QubitObject::get($criteria)->__get(0);
+        } catch (PropelException $e) {
+            throw new sfError404Exception($e->getMessage());
+        }
+
         if (false == @$params['throw404'] && !isset($this->resource)) {
             throw new sfError404Exception();
         }
