@@ -1,3 +1,6 @@
+# BCU ignore
+/config/bcu_config.*
+
 # User-generated configuration files
 /apps/qubit/config/factories.yml
 /apps/qubit/config/settings.yml

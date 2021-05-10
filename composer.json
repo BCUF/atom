@@ -13,7 +13,8 @@
         "phing/phing": "2.*"
     },
     "require": {
-        "league/csv": "^9.4"
+        "league/csv": "^9.4",
+        "symfony/ldap": "^5.1"
     },
     "autoload-dev": {
         "psr-4": {

@@ -45,6 +45,8 @@ RUN set -xe \
 			npm \
 			make \
 			bash \
+		&& apk add ldb-dev libldap openldap-dev \
+        && docker-php-ext-install ldap \
 		&& npm install -g "less@<2.0.0" \
 		&& curl -Ls https://archive.apache.org/dist/xmlgraphics/fop/binaries/fop-2.1-bin.tar.gz | tar xz -C /usr/share \
 		&& ln -sf /usr/share/fop-2.1/fop /usr/local/bin/fop \
