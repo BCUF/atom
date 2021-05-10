@@ -94,8 +94,8 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
         break;
 
       case 'physical':
-        // Non-hierarchical DIP upload method
-        $this->addChildsFromOriginalFileGrp();
+
+        $this->customRecursivelyAddChildsFromLogicalStructMapDiv($structMap, $this->resource);
 
         break;
     }
@@ -252,6 +252,140 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
     }
   }
 
+  protected function customRecursivelyAddChildsFromLogicalStructMapDiv($structMapDiv, $parent)
+  {
+    $this->metsParser->registerNamespaces($structMapDiv, array('m' => 'mets'));
+
+    foreach ($structMapDiv->xpath('m:div') as $item)
+    {
+      $this->metsParser->registerNamespaces($item, array('m' => 'mets'));
+
+      if (isset($item['TYPE']) && (string)$item['TYPE'] == 'Directory')
+      {
+        $child = $parent;
+
+        if (isset($item['DMDID']))
+        { 
+          //  We don't want the 1st level   
+          if (strcmp(strtolower($item['DMDID']), strtolower("dmdSec_1")) !== 0)
+          {
+            $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
+            $child = $this->customCreateInformationObjectWithOriginalDirName($dir_name, "Directory", $parent);
+            $child->save();         
+          }          
+        }
+
+        else if (isset($item['LABEL']) && !isset($item['ADMID']))       
+        {
+          if((strcmp(strtolower($item['LABEL']), strtolower("metadata")) === 0) 
+          || (strcmp(strtolower($item['LABEL']), strtolower("submissionDocumentation")) === 0))
+          {
+            continue;
+          }
+          else{
+            $dir_name = (string)$item['LABEL'];
+            $child = $this->customCreateInformationObjectWithOriginalDirName($dir_name, "Directory", $parent);
+            $child->save(); 
+          }
+        }
+        $this->customRecursivelyAddChildsFromLogicalStructMapDiv($item, $child);
+      }
+
+      if (isset($item['TYPE']) && (string)$item['TYPE'] == 'Item')
+      {  
+        $child = $parent;
+
+        sfContext::getInstance()->getLogger()->info('TYPE: Item');
+
+        if (0 < count($fptr = $item->xpath('m:fptr')))
+        {
+          $fileId = (string)$fptr[0]['FILEID'];
+          $files = $this->metsParser->getFilesFromOriginalFileGrp();
+
+          foreach ($files as $file)
+          {
+            if (isset($file['ID']))
+            {
+              if (strcmp($fileId, (string)$file['ID']) === 0)
+              {
+                $this->customCreateFile($parent, $fileId, $child);
+              }
+            }
+          }
+        }      
+      }
+    }
+  }
+
+  protected function customCreateFile($parent, $fileId, $data)
+  {
+    // Create child
+    $child = new QubitInformationObject;
+    $child->setPublicationStatus($this->publicationStatus);
+    $child->setLevelOfDescriptionByName('item');
+    $child->parentId = $parent->id;
+
+    // Process metatadata from METS file
+    if ((null !== $dmdId = $this->mappings['dmdMapping'][$fileId])
+    && (null !== $dmdSec = $this->metsParser->getDmdSec($dmdId)))
+    {
+      $child = $this->metsParser->processDmdSec($dmdSec, $child);
+    }
+
+    // override the title, we want the original name
+    $child->title = $this->metsParser->getOriginalFilename($fileId);
+
+    // Storage UUIDs
+    $child->addProperty('objectUUID', $this->mappings['uuidMapping'][$fileId]);
+    $child->addProperty('aipUUID', $this->aip->uuid);
+
+    sfContext::getInstance()->getLogger()->info('METSArchivematicaDIP - objectUUID: '.$data['objectUUID']);
+
+    // DIP paths
+    if (false === $absolutePathWithinDip = $this->getAccessCopyPath($this->mappings['uuidMapping'][$fileId]))
+    {
+      sfContext::getInstance()->getLogger()->info('METSArchivematicaDIP -             Access copy cannot be found in the DIP');
+
+      // Do not create IOs for files without access copy,
+      // if normalization fails, Archivematica copies the original into the DIP
+      return;
+    }
+    else
+    {
+      $absolutePathWithinDipParts = pathinfo($absolutePathWithinDip);
+    }
+
+    // Add digital object
+    if (false !== $absolutePathWithinDip && is_readable($absolutePathWithinDip))
+    {
+      $digitalObject = new QubitDigitalObject;
+      $digitalObject->assets[] = new QubitAsset($absolutePathWithinDip);
+      $digitalObject->usageId = QubitTerm::MASTER_ID;
+      $child->digitalObjectsRelatedByobjectId[] = $digitalObject;
+    } 
+    
+    // Create relation with AIP
+    $relation = new QubitRelation;
+    $relation->subjectId = $this->aip->id;
+    $relation->typeId = QubitTerm::AIP_RELATION_ID;
+    $child->relationsRelatedByobjectId[] = $relation;
+
+    // Save IO without updating the ES document
+    $child->indexOnSave = false;
+    $child->save();
+
+    // Add required data from METS file to the database
+    $error = $this->metsParser->addMetsDataToInformationObject($child, $this->mappings['uuidMapping'][$fileId]);
+    if (isset($error))
+    {
+      sfContext::getInstance()->getLogger()->info('METSArchivematicaDIP -             ' . $error);
+    }
+
+    // Save IO updating the ES document
+    $child->indexOnSave = true;
+    $child->save();
+  }
+
   protected function recursivelyAddChildsFromLogicalStructMapDiv($structMapDiv, $parent)
   {
     $this->metsParser->registerNamespaces($structMapDiv, array('m' => 'mets'));
@@ -337,6 +471,18 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
         $child->save();
       }
     }
+  }
+
+  protected function customCreateInformationObjectWithOriginalDirName($dirName, $typeByName, $parent)
+  {
+    $io = new QubitInformationObject;
+    $io->parentId = $parent->id;
+    $io->setPublicationStatus($this->publicationStatus);
+
+    $io->title = $dirName;
+    $io->setLevelOfDescriptionByName($typeByName);
+
+    return $io;
   }
 
   protected function createInformationObjectFromStructMapDiv($div, $parent)

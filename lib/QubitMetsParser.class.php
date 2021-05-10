@@ -199,6 +199,38 @@ class QubitMetsParser
     return $latestDmdSec;
   }
 
+  protected function endsWith( $haystack, $needle ) {
+    $length = strlen( $needle );
+    if( !$length ) {
+      return true;
+    }
+    return substr( $haystack, -$length ) === $needle;
+  }
+
+
+  /**
+     * Get the filename part of the path in the <premis:originalName> element of a <mets:dmdSec> element.
+     *
+     * @param string $dmId METS DMID
+     *
+     * @return string the last directory or the filename of the path in <premis:originalName>
+     */
+  public function getOriginalFileNameFromDmdSec($dmId)
+  {
+    if (false !== $originalName = $this->document->xpath(sprintf('//m:dmdSec[@ID="%s"]/m:mdWrap/m:xmlData/p:object/p:originalName', $dmId)))
+    {
+      if($this->endsWith((string)$originalName[0], '/'))
+      {
+        $exploded = explode('/', (string)$originalName[0]);
+        return (string)$exploded[count($exploded)-2];
+      }   
+      else
+      {
+        return (string)$originalName[0];
+      }                   
+    }
+  }
+
   /**
    * Find the original filename
    * simple_load_string() is used to make xpath queries faster

@@ -15,6 +15,12 @@ used community-driven project. Learn more at:
 You are free to copy, modify, and distribute AtoM with attribution under the
 terms of the AGPLv3 license. See the [LICENSE](LICENSE) file for details.
 
+
+## Modification 1: Have a hierarchical structure with original name
+### Files changed
+- plugins/qtSwordPlugin/lib/qtPackageExtractorMETSArchivematicaDIP.class.php
+- lib/QubitMetsParser.class.php
+
 ## Installation
 
 **Production installation**
