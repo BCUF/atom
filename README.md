@@ -118,7 +118,7 @@ You can update the users with these settings with the buttons **Update LDAP user
      - updated if administrator
      - deleted
 
-# Hierarchical structure with original name
+# Changes for Hierarchical structure with original name
 ## Files changed
 - plugins/qtSwordPlugin/lib/qtPackageExtractorMETSArchivematicaDIP.class.php
 - lib/QubitMetsParser.class.php
