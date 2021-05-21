@@ -95,7 +95,19 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
 
       case 'physical':
 
-        $this->customRecursivelyAddChildsFromLogicalStructMapDiv($structMap, $this->resource);
+        $p = $this->getBcuProcess($structMap);
+
+        if(strcmp(strtolower($p), strtolower("hierarchical")) === 0) 
+        {
+          $this->customRecursivelyAddChildsFromLogicalStructMapDiv($structMap, $this->resource);
+        }
+        else
+        {
+          // Non-hierarchical DIP upload method
+          $this->addChildsFromOriginalFileGrp();
+        }
+
+        
 
         break;
     }
@@ -105,6 +117,26 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
     QubitSearch::getInstance()->update($this->resource);
 
     parent::process();
+  }
+
+
+  protected function getBcuProcess($structMapDiv)
+  {
+
+    $this->metsParser->registerNamespaces($structMapDiv, array('m' => 'mets'));
+
+    // Use the local name to accept no namespace and dc or dcterms namespaces
+    $bcu_processes = $structMapDiv->xpath('//m:mdWrap/m:xmlData/bcu_process');
+
+    foreach ($bcu_processes as $p)
+    {
+      if(strcmp(strtolower($p), strtolower("hierarchical")) === 0)
+      {
+        return (string)$p;
+      }
+    }
+    
+    return "";
   }
 
   protected function addChildsFromOriginalFileGrp()
@@ -269,9 +301,25 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
           //  We don't want the 1st level   
           if (strcmp(strtolower($item['DMDID']), strtolower("dmdSec_1")) !== 0)
           {
-            $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
-            $child = $this->customCreateInformationObjectWithOriginalDirName($dir_name, "Directory", $parent);
-            $child->save();         
+
+            if (strcmp(strtolower('objects'), $item['LABEL']) != 0)
+            {
+              $child = new QubitInformationObject;
+              $child->setPublicationStatus($this->publicationStatus);
+              $child->setLevelOfDescriptionByName('Directory');
+              $child->parentId = $parent->id;
+  
+              $child = $this->metsParser->processDmdSec($item['DMDID'], $child);
+  
+              $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
+      
+              if( isset($dir_name) and $dir_name !=='')
+              {
+                $child->title = $dir_name;
+              }
+              
+              $child->save();         
+            }
           }          
         }
 
@@ -282,7 +330,8 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
           {
             continue;
           }
-          else{
+          else
+          {
             $dir_name = (string)$item['LABEL'];
             $child = $this->customCreateInformationObjectWithOriginalDirName($dir_name, "Directory", $parent);
             $child->save(); 
@@ -332,8 +381,22 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
       $child = $this->metsParser->processDmdSec($dmdSec, $child);
     }
 
-    // override the title, we want the original name
-    $child->title = $this->metsParser->getOriginalFilename($fileId);
+    $originalFilename = $this->metsParser->getOriginalFilename($fileId);
+    if(isset($originalFilename) and $originalFilename !== '')
+    {
+      // override the title, we want the original name
+      $child->title = $this->metsParser->getOriginalFilename($fileId);
+    }
+    else
+    {
+      $child_tmp = $this->metsParser->processDmdSec($dmdSec, $child);
+      if(isset($child_tmp->title))
+      {
+        $child->title = $child_tmp->title;
+      }
+    }
+
+    
 
     // Storage UUIDs
     $child->addProperty('objectUUID', $this->mappings['uuidMapping'][$fileId]);
