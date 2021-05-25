@@ -302,29 +302,24 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
           if (strcmp(strtolower($item['DMDID']), strtolower("dmdSec_1")) !== 0)
           {
 
-            // if (strcmp(strtolower('objects'), $item['LABEL']) != 0)
-            // {
-              $child = new QubitInformationObject;
-              $child->setPublicationStatus($this->publicationStatus);
-              $child->setLevelOfDescriptionByName('Directory');
-              $child->parentId = $parent->id;
-              
-              
-              if (null !== $dmdSec = $this->metsParser->getDmdSec($$item['DMDID']))
-              {
-                $child = $this->metsParser->processDmdSec($dmdSec, $child);
-              }
-              // $child = $this->metsParser->processDmdSec($item['DMDID'], $child);
-  
-              $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
+            $child = new QubitInformationObject;
+            $child->setPublicationStatus($this->publicationStatus);
+            $child->setLevelOfDescriptionByName('Directory');
+            $child->parentId = $parent->id;
+                    
+            if (null !== $dmdSec = $this->metsParser->getFirstDmdSec($item['DMDID']))
+            {
+              $child = $this->metsParser->processDmdSec($dmdSec, $child);
+            }
+            
+            $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
       
-              if( isset($dir_name) and $dir_name !=='')
-              {
-                $child->title = $dir_name;
-              }
+            if( isset($dir_name) and $dir_name !=='')
+            {
+              $child->title = $dir_name;
+            }
               
-              $child->save();         
-            // }
+            $child->save();         
           }          
         }
 
