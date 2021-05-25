@@ -171,6 +171,24 @@ class QubitMetsParser
     return $this->getDmdSec((string)$divs[0]['DMDID']);
   }
 
+  public function getFirstDmdSec($dmdId)
+  {
+    
+    foreach (explode(' ', $dmdId) as $id)
+    {
+      $dmdSecs = $this->document->xpath('//m:dmdSec[@ID="'.$id.'"]');
+      if (count($dmdSecs) == 0)
+      {
+        continue;
+      }
+
+      return $dmdSecs[0];
+    }
+
+    return '';
+  }
+
+
   public function getDmdSec($dmdId)
   {
     // The DMDID attribute can contain one or more DMD section ids
