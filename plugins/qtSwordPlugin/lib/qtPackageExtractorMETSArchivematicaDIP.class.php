@@ -107,8 +107,6 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
           $this->addChildsFromOriginalFileGrp();
         }
 
-        
-
         break;
     }
 
@@ -301,25 +299,32 @@ class qtPackageExtractorMETSArchivematicaDIP extends qtPackageExtractorBase
           //  We don't want the 1st level   
           if (strcmp(strtolower($item['DMDID']), strtolower("dmdSec_1")) !== 0)
           {
-
             $child = new QubitInformationObject;
             $child->setPublicationStatus($this->publicationStatus);
             $child->setLevelOfDescriptionByName('Directory');
             $child->parentId = $parent->id;
-                    
+                      
             if (null !== $dmdSec = $this->metsParser->getFirstDmdSec($item['DMDID']))
             {
               $child = $this->metsParser->processDmdSec($dmdSec, $child);
             }
-            
+              
             $dir_name = $this->metsParser->getOriginalFileNameFromDmdSec($item['DMDID']);
-      
+        
             if( isset($dir_name) and $dir_name !=='')
             {
               $child->title = $dir_name;
             }
-              
-            $child->save();         
+
+            //  Skip the special skip-transfer-directory
+            if(strcmp(strtolower($item['LABEL']), strtolower("skip-transfer-directory")) !== 0)
+            { 
+              $child->save();     
+            }
+            else
+            {
+              $child = $parent;
+            }
           }          
         }
 
