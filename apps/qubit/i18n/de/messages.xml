@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE xliff PUBLIC "-//XLIFF//DTD XLIFF//EN" "http://www.oasis-open.org/committees/xliff/documents/xliff.dtd">
 <xliff version="1.0">
-  <file source-language="en" target-language="" datatype="plaintext" original="messages" date="2020-09-30T17:00:46Z" product-name="messages">
+  <file source-language="en" target-language="" datatype="plaintext" original="messages" date="2022-07-18T13:55:05Z" product-name="messages">
     <header/>
     <body>
       <trans-unit id="f191b2120c9efa7b0c1411d6989e325561707ddb">
@@ -2146,7 +2146,7 @@
       </trans-unit>
       <trans-unit id="bda1b9ddd2a172cd6fc2bdd66737451d25b6f867">
         <source>Hierarchy</source>
-        <target/>
+        <target>Archivplan</target>
         <note>https://github.com/artefactual/atom/blob/master/apps/qubit/modules/browse/templates/hierarchySuccess.php</note>
       </trans-unit>
       <trans-unit id="90ccd6497400b5576aeca1bd94af74aae1e0a250">
@@ -4806,7 +4806,7 @@
       </trans-unit>
       <trans-unit id="e9afef074d0341b011c84b0d66e9ffecc5f4b4dd">
         <source>Top-level description</source>
-        <target>Beschreibung auf der obersten Ebene</target>
+        <target>Sektion</target>
         <note>https://github.com/artefactual/atom/blob/master/apps/qubit/modules/object/templates/importSelectSuccess.php</note>
       </trans-unit>
       <trans-unit id="0b228d9401c9cc121d233ed5513869b63a3e6033">
