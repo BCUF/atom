@@ -98,13 +98,13 @@ Once the ADUser activated, you know can log with both the credential from Atom a
 ### Settings
 In the settings, there are 9 options :
 - Protocol: ldap/ldaps
-- Hostname: example.fr.ch
+- Hostname: example.com
 - Port: 389/636
-- Base DN: dc=example,dc=fr,dc=ch
+- Base DN: dc=example,dc=com
 - Atom read only group (Select)
-- AD read only group: CN=MY_GRP,OU=STD,OU=GRP,OU=PATH,DC=example,DC=fr,DC=ch
+- AD read only group: CN=MY_GRP_R,OU=XXX,DC=example,DC=COM
 - Atom read/write group (Select)
-- AD read/write group: CN=MY_GRP,OU=STD,OU=GRP,OU=PATH,DC=example,DC=fr,DC=ch
+- AD read/write group: CN=MY_GRP_W,OU=XXX,DC=example,DC=COM
 - Archived group for users with notice (Select)
 
 You can update the users with these settings with the buttons **Update LDAP users**.
@@ -118,12 +118,8 @@ You can update the users with these settings with the buttons **Update LDAP user
      - updated if administrator
      - deleted
 
-# Changes for Hierarchical structure with original name
-## Files changed
-- plugins/qtSwordPlugin/lib/qtPackageExtractorMETSArchivematicaDIP.class.php
-- lib/QubitMetsParser.class.php
 
-# [Access to Memory](https://www.accesstomemory.org)
+## [Access to Memory](https://www.accesstomemory.org)
 
 Developed and maintained by [Artefactual Systems](https://www.artefactual.com/)
 

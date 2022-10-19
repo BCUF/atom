@@ -41,7 +41,7 @@ class ADUser extends myUser implements Zend_Acl_Role_Interface
       return false;
     }
 
-    $host = (string)QubitSetting::getByName('ldapHost');
+    $host = (null !== $setting = QubitSetting::getByName('ldapHost')) ? $setting->getValue(['sourceCulture' => true]) : null;
     $authenticated = $this->ldapBind($username. '@' .$host, $password);
 
     if ($authenticated)
@@ -98,8 +98,8 @@ class ADUser extends myUser implements Zend_Acl_Role_Interface
 
     $conn = $this->getLdapConnection();
     // Do AD search for user's email address
-    $base_dn = (string)QubitSetting::getByName('ldapBaseDn');
-    $host = (string)QubitSetting::getByName('ldapHost');
+    $base_dn = (null !== $setting = QubitSetting::getByName('ldapBaseDn')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $host = (null !== $setting = QubitSetting::getByName('ldapHost')) ? $setting->getValue(['sourceCulture' => true]) : null;
     $filter='(&(objectCategory=person)(objectClass=user)(userPrincipalName='. $username .'@'. $host .'))';
     $result = ldap_search($conn, $base_dn, $filter);
     $entries = ldap_get_entries($conn, $result);
@@ -110,22 +110,22 @@ class ADUser extends myUser implements Zend_Acl_Role_Interface
       $user->email = strtolower($entries[0]['mail'][0]);
     }
 
+    $user->save();
     return $user;
   }
 
   protected function checkGroupsLdap($user)
   {
     $conn = $this->getLdapConnection();
-    $host = (string)QubitSetting::getByName('ldapHost');
-    $base_dn = (string)QubitSetting::getByName('ldapBaseDn');
-    $groupRO = (string)QubitSetting::getByName('ldapGroupRO');
-    $atomGroupRO = (int)QubitSetting::getByName('atomGroupRO')->value;
+    $host = (null !== $setting = QubitSetting::getByName('ldapHost')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $base_dn = (null !== $setting = QubitSetting::getByName('ldapBaseDn')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $groupRO = (null !== $setting = QubitSetting::getByName('ldapGroupRO')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $atomGroupRO = (int)(null !== $setting = QubitSetting::getByName('atomGroupRO')) ? $setting->getValue(['sourceCulture' => true]) : null;
     $isRO = $this->editGroupLdap($user, $groupRO, $atomGroupRO, $conn, $host, $base_dn);
 
-    $groupRW = (string)QubitSetting::getByName('ldapGroupRW');
-    $atomGroupRW = (int)QubitSetting::getByName('atomGroupRW')->value;
+    $groupRW = (int)(null !== $setting = QubitSetting::getByName('ldapGroupRW')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $atomGroupRW = (int)(null !== $setting = QubitSetting::getByName('atomGroupRW')) ? $setting->getValue(['sourceCulture' => true]) : null;
     $isRW = $this->editGroupLdap($user, $groupRW, $atomGroupRW, $conn, $host, $base_dn);
-
 
     if (!$isRO && !$isRW)
     {
@@ -169,14 +169,14 @@ class ADUser extends myUser implements Zend_Acl_Role_Interface
       return $this->ldapConnection;
     }
 
-    $protocol = QubitSetting::getByName('ldapProtocol');
-    $host = QubitSetting::getByName('ldapHost');
-    $port = QubitSetting::getByName('ldapPort');
+    $protocol = (null !== $setting = QubitSetting::getByName('ldapProtocol')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $host = (null !== $setting = QubitSetting::getByName('ldapHost')) ? $setting->getValue(['sourceCulture' => true]) : null;
+    $port = (null !== $setting = QubitSetting::getByName('ldapPort')) ? $setting->getValue(['sourceCulture' => true]) : null;
 
     if (null !== $protocol && null !== $host && null !== $port)
     {
       // If using an URI you only need to send the host URI, so the $port will be null
-      $connection = ldap_connect($protocol->getValue(array('sourceCulture' => true)). "://" .$host->getValue(array('sourceCulture' => true)). ":" .$port->getValue(array('sourceCulture' => true)));
+      $connection = ldap_connect($protocol. "://" .$host. ":" .$port);    
       ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
       ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
       $this->ldapConnection = $connection;
